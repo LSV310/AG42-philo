@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/03 17:10:25 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/04 16:12:28 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,26 @@ int	fill_data(int ac, char **av, t_data *data)
 	return (1);
 }
 
+int	initialize_thread(t_data *data, pthread_t *threads, int i)
+{
+	t_newthread	*ini;
+
+	ini = malloc(sizeof(t_newthread));
+	if (!ini)
+		return (0);
+	ini->data = data;
+	ini->current_num = i + 1;
+	pthread_create(&threads[i], NULL, &new_thread, ini);
+	return (1);
+}
+
+
 int	main(int ac, char **av)
 {
-	t_data		data;
-	pthread_t	*threads;
-	int			i;
+	t_data			data;
+	pthread_t		*threads;
+	struct timeval	current_time;
+	int				i;
 
 	if (ac < 5)
 		return (printf("Not enough arguments\n"), 1);
@@ -56,11 +71,13 @@ int	main(int ac, char **av)
 	if (!threads)
 		return (1);
 	i = 0;
+	gettimeofday(&current_time, NULL);
+	data.simulation_start = get_time(&current_time);
 	while (i < data.number_of_philosophers)
 	{
-		pthread_create(&threads[i], NULL, &new_thread, &data);
-		i++;
+		if (!initialize_thread(&data, threads, i++))
+			return (free_all(&data, threads, i), 1);
 	}
-	free_all(&data, threads);
+	free_all(&data, threads, i);
 	return (0);
 }

@@ -6,20 +6,28 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/03 16:56:31 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/04 16:14:59 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	free_all(t_data *data, pthread_t *threads)
+void	free_all(t_data *data, pthread_t *threads, int allocated)
 {
 	int	i;
 
 	i = 0;
-	while (i < data->number_of_philosophers)
+	while (i < allocated && i < data->number_of_philosophers)
 		pthread_join(threads[i++], NULL);
 	free(threads);
+}
+
+long	get_time(struct timeval *timestamp)
+{
+	long	time;
+
+	time = timestamp->tv_sec * 1000 + timestamp->tv_usec / 1000;
+	return (time);
 }
 
 long	ft_atol(const char *nptr)
