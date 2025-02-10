@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/04 16:12:28 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/10 13:57:00 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,34 @@ int	initialize_thread(t_data *data, pthread_t *threads, int i)
 		return (0);
 	ini->data = data;
 	ini->current_num = i + 1;
-	pthread_create(&threads[i], NULL, &new_thread, ini);
+	if (pthread_create(&threads[i], NULL, &new_thread, ini))
+		return (0);
 	return (1);
 }
 
+void	create_mutexs(t_data *data, int count)
+{
+	int	i;
+
+	if (count == 0)
+		return ;
+	data->forks = malloc(sizeof(pthread_mutex_t *) * (count + 2));
+	if (!data->forks)
+		exit(1);
+	i = 0;
+	while (i < count)
+	{
+		printf("%d\n", i);
+		if (pthread_mutex_init(&data->forks[i + 1], NULL))
+		{
+			free_mutexs(data->forks, i);
+			exit(1);
+		}
+		i++;
+	}
+	data->forks[i] = data->forks[1];
+	data->forks[0] = data->forks[i - 1];
+}
 
 int	main(int ac, char **av)
 {
@@ -67,6 +91,7 @@ int	main(int ac, char **av)
 		return (printf("Too many arguments\n"), 1);
 	if (!fill_data(ac, av, &data))
 		return (1);
+	create_mutexs(&data, data.number_of_philosophers);
 	threads = malloc(sizeof(pthread_t) * data.number_of_philosophers);
 	if (!threads)
 		return (1);
@@ -76,8 +101,9 @@ int	main(int ac, char **av)
 	while (i < data.number_of_philosophers)
 	{
 		if (!initialize_thread(&data, threads, i++))
-			return (free_all(&data, threads, i), 1);
+			return (free_mutexs(data.forks, i), free_threads(threads, i), 1);
 	}
-	free_all(&data, threads, i);
+	// free_mutexs(data.forks, i);
+	free_threads(threads, i);
 	return (0);
 }

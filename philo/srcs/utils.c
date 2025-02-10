@@ -6,20 +6,30 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/04 16:14:59 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/10 13:43:01 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	free_all(t_data *data, pthread_t *threads, int allocated)
+void	free_threads(pthread_t *threads, int allocated)
 {
 	int	i;
 
 	i = 0;
-	while (i < allocated && i < data->number_of_philosophers)
+	while (i < allocated)
 		pthread_join(threads[i++], NULL);
 	free(threads);
+}
+
+void	free_mutexs(pthread_mutex_t *forks, int allocated)
+{
+	int	i;
+
+	i = 1;
+	while (i < allocated + 1)
+		pthread_mutex_destroy(&forks[i++]);
+	free(forks);
 }
 
 long	get_time(struct timeval *timestamp)
