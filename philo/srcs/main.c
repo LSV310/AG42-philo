@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/10 13:57:00 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/10 18:27:46 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,12 @@ void	create_mutexs(t_data *data, int count)
 
 	if (count == 0)
 		return ;
-	data->forks = malloc(sizeof(pthread_mutex_t *) * (count + 2));
+	data->forks = malloc(sizeof(pthread_mutex_t) * (count + 2));
 	if (!data->forks)
 		exit(1);
 	i = 0;
 	while (i < count)
 	{
-		printf("%d\n", i);
 		if (pthread_mutex_init(&data->forks[i + 1], NULL))
 		{
 			free_mutexs(data->forks, i);
@@ -103,7 +102,6 @@ int	main(int ac, char **av)
 		if (!initialize_thread(&data, threads, i++))
 			return (free_mutexs(data.forks, i), free_threads(threads, i), 1);
 	}
-	// free_mutexs(data.forks, i);
-	free_threads(threads, i);
+	(free_mutexs(data.forks, i), free_threads(threads, i));
 	return (0);
 }
