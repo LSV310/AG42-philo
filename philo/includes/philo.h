@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/10 18:23:49 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/11 15:38:34 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,15 @@
 # include <limits.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <errno.h>
 
 typedef struct s_philo
 {
-	long			num;
-	long			eating_count;
-	long			last_eat;
+	long	num;
+	long	eating_count;
+	long	last_eat;
+	int		fork1;
+	int		fork2;
 }	t_philo;
 
 typedef struct s_data
@@ -34,8 +37,10 @@ typedef struct s_data
 	long			time_to_eat;
 	long			time_to_sleep;
 	long			number_of_times_each_philosopher_must_eat;
-	long			simulation_start;
+	long			start_ts;
 	pthread_mutex_t	*forks;
+	int				*forks_states;
+	pthread_mutex_t	printf_mutex;
 }	t_data;
 
 typedef struct s_newthread
@@ -48,15 +53,21 @@ typedef struct s_newthread
 void	*new_thread(void *data);
 
 // actions
+int		can_eat(t_philo *philo, t_data *data);
 void	philo_sleep(t_philo *philo, t_data *data);
 void	philo_eat(t_philo *philo, t_data *data);
 void	philo_think(t_philo *philo, t_data *data);
 void	die(t_philo *philo, t_data *data);
 
+// forks
+int		try_take_fork1(t_data *data, t_philo *philo, long ts);
+int		try_take_fork2(t_data *data, t_philo *philo, long ts);
+
 // utils
 void	free_threads(pthread_t *threads, int allocated);
-void	free_mutexs(pthread_mutex_t *forks, int allocated);
+void	free_mutexs(t_data *data, int allocated);
 long	get_time(struct timeval *timestamp);
+void	print_msg(long num, long ms, pthread_mutex_t mutex, int msg);
 long	ft_atol(const char *nptr);
 
 #endif

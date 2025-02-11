@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/10 18:27:46 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/11 15:42:50 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,21 +60,27 @@ void	create_mutexs(t_data *data, int count)
 
 	if (count == 0)
 		return ;
-	data->forks = malloc(sizeof(pthread_mutex_t) * (count + 2));
+	if (pthread_mutex_init(&data->printf_mutex, NULL))
+		exit(1);
+	data->forks = malloc(sizeof(pthread_mutex_t) * count);
 	if (!data->forks)
 		exit(1);
 	i = 0;
 	while (i < count)
 	{
-		if (pthread_mutex_init(&data->forks[i + 1], NULL))
+		if (pthread_mutex_init(&data->forks[i], NULL))
 		{
-			free_mutexs(data->forks, i);
+			free_mutexs(data, i);
 			exit(1);
 		}
 		i++;
 	}
-	data->forks[i] = data->forks[1];
-	data->forks[0] = data->forks[i - 1];
+	i = 0;
+	data->forks_states = malloc(sizeof(int) * count);
+	if (!data->forks_states)
+		(free_mutexs(data, count), exit(1));
+	while (i < count)
+		data->forks_states[i++] = 0;
 }
 
 int	main(int ac, char **av)
@@ -94,14 +100,13 @@ int	main(int ac, char **av)
 	threads = malloc(sizeof(pthread_t) * data.number_of_philosophers);
 	if (!threads)
 		return (1);
-	i = 0;
 	gettimeofday(&current_time, NULL);
-	data.simulation_start = get_time(&current_time);
+	data.start_ts = get_time(&current_time);
+	i = 0;
 	while (i < data.number_of_philosophers)
 	{
 		if (!initialize_thread(&data, threads, i++))
-			return (free_mutexs(data.forks, i), free_threads(threads, i), 1);
+			return (free_threads(threads, i), free_mutexs(&data, i), 1);
 	}
-	(free_mutexs(data.forks, i), free_threads(threads, i));
-	return (0);
+	return (free_threads(threads, i), free_mutexs(&data, i), 0);
 }

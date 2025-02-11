@@ -1,5 +1,5 @@
 CC			= cc
-CFLAGS		= -Wall -Werror -Wextra -g3
+CFLAGS		= -g3 #-Wall -Werror -Wextra
 
 INCLUDES	= includes/
 SRC_DIR		= srcs/
@@ -7,7 +7,7 @@ OBJ_DIR		= objs/
 
 CFLAGS		+= -I$(INCLUDES)
 
-SRC			= main.c utils.c threads.c actions.c
+SRC			= main.c utils.c threads.c actions.c forks.c
 OBJ			= $(patsubst %.c, $(OBJ_DIR)%.o, $(SRC))
 
 NAME		= philo
