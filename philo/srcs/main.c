@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/11 15:42:50 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/12 10:35:45 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ int	main(int ac, char **av)
 		return (printf("Too many arguments\n"), 1);
 	if (!fill_data(ac, av, &data))
 		return (1);
+	data.end = 0;
 	create_mutexs(&data, data.number_of_philosophers);
 	threads = malloc(sizeof(pthread_t) * data.number_of_philosophers);
 	if (!threads)

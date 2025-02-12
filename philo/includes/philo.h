@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/11 15:38:34 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/12 10:35:31 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_data
 	pthread_mutex_t	*forks;
 	int				*forks_states;
 	pthread_mutex_t	printf_mutex;
+	int				end;
 }	t_data;
 
 typedef struct s_newthread

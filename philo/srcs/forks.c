@@ -6,13 +6,13 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:20:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/11 16:30:40 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/12 11:09:11 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	try_take_fork1(t_data *data, t_philo *philo, long ts)
+/* int	try_take_fork1(t_data *data, t_philo *philo, long ts)
 {
 	int	fork1;
 
@@ -44,4 +44,4 @@ int	try_take_fork2(t_data *data, t_philo *philo, long ts)
 		return (1);
 	}
 	return (0);
-}
+} */
