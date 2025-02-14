@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/12 10:35:31 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/14 16:02:29 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_data
 	long			start_ts;
 	pthread_mutex_t	*forks;
 	int				*forks_states;
+	pthread_mutex_t	states_mutex;
 	pthread_mutex_t	printf_mutex;
 	int				end;
 }	t_data;
@@ -61,14 +62,19 @@ void	philo_think(t_philo *philo, t_data *data);
 void	die(t_philo *philo, t_data *data);
 
 // forks
-int		try_take_fork1(t_data *data, t_philo *philo, long ts);
-int		try_take_fork2(t_data *data, t_philo *philo, long ts);
+int	lock_fork1(t_philo *philo, t_data *data);
+int	lock_fork2(t_philo *philo, t_data *data);
+
+// time
+long	get_time(struct timeval *timestamp);
+long	get_time_now();
+long	get_sim_time(t_data *data);
 
 // utils
 void	free_threads(pthread_t *threads, int allocated);
 void	free_mutexs(t_data *data, int allocated);
 long	get_time(struct timeval *timestamp);
-void	print_msg(long num, long ms, pthread_mutex_t mutex, int msg);
+void	print_msg(long num, t_data *data, int msg);
 long	ft_atol(const char *nptr);
 
 #endif

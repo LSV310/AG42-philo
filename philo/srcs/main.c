@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/12 10:35:45 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/14 16:02:12 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,10 @@ void	create_mutexs(t_data *data, int count)
 
 	if (count == 0)
 		return ;
-	if (pthread_mutex_init(&data->printf_mutex, NULL))
+	if (pthread_mutex_init(&data->states_mutex, NULL))
 		exit(1);
+	if (pthread_mutex_init(&data->printf_mutex, NULL))
+		(pthread_mutex_destroy(&data->states_mutex), exit(1));
 	data->forks = malloc(sizeof(pthread_mutex_t) * count);
 	if (!data->forks)
 		exit(1);
@@ -101,8 +103,7 @@ int	main(int ac, char **av)
 	threads = malloc(sizeof(pthread_t) * data.number_of_philosophers);
 	if (!threads)
 		return (1);
-	gettimeofday(&current_time, NULL);
-	data.start_ts = get_time(&current_time);
+	data.start_ts = get_time_now();
 	i = 0;
 	while (i < data.number_of_philosophers)
 	{

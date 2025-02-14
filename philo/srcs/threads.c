@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/11 16:24:13 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/14 16:31:11 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,10 @@ void	*new_thread(void *arg)
 	philo.last_eat = data->start_ts;
 	philo.eating_count = 0;
 	attribute_forks(data, &philo);
-	if (philo.num % 2 == 0)
+	if (philo.num % 2 == 1)
 	{
 		while (!can_eat(&philo, data))
-			usleep(5 * 1000);
+			usleep(50);
 		philo_eat(&philo, data);
 	}
 	else

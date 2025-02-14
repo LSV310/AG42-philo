@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/12 10:38:08 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/14 14:58:48 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,22 +30,17 @@ void	free_mutexs(t_data *data, int allocated)
 	while (i < allocated)
 		pthread_mutex_destroy(&data->forks[i++]);
 	pthread_mutex_destroy(&data->printf_mutex);
+	pthread_mutex_destroy(&data->states_mutex);
 	free(data->forks);
 	free(data->forks_states);
 }
 
-long	get_time(struct timeval *timestamp)
+void	print_msg(long num, t_data *data, int msg)
 {
-	long	time;
-
-	time = timestamp->tv_sec * 1000 + timestamp->tv_usec / 1000;
-	return (time);
-}
-
-void	print_msg(long num, long ms, pthread_mutex_t mutex, int msg)
-{
-	if (pthread_mutex_lock(&mutex))
+	long	ms;
+	if (pthread_mutex_lock(&data->printf_mutex))
 		return ;
+	ms = get_sim_time(data);
 	if (msg == 0)
 		printf("%ld %ld has taken a fork\n", ms, num);
 	else if (msg == 1)
@@ -56,7 +51,7 @@ void	print_msg(long num, long ms, pthread_mutex_t mutex, int msg)
 		printf("%ld %ld is thinking\n", ms, num);
 	else if (msg == 4)
 		printf("%ld %ld died\n", ms, num);
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&data->printf_mutex);
 }
 
 long	ft_atol(const char *nptr)
