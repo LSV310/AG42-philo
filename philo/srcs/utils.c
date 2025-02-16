@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/14 14:58:48 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/15 13:01:46 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,30 @@ void	free_mutexs(t_data *data, int allocated)
 	i = 0;
 	while (i < allocated)
 		pthread_mutex_destroy(&data->forks[i++]);
+	pthread_mutex_destroy(&data->end_mutex);
 	pthread_mutex_destroy(&data->printf_mutex);
 	pthread_mutex_destroy(&data->states_mutex);
 	free(data->forks);
 	free(data->forks_states);
 }
 
+bool	get_death(t_data *data)
+{
+	bool	end;
+
+	end = false;
+	if (pthread_mutex_lock(&data->end_mutex))
+		return (true);
+	if (data->end == true)
+		end = true;
+	pthread_mutex_unlock(&data->end_mutex);
+	return (end);
+}
+
 void	print_msg(long num, t_data *data, int msg)
 {
 	long	ms;
+
 	if (pthread_mutex_lock(&data->printf_mutex))
 		return ;
 	ms = get_sim_time(data);

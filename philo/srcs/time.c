@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:08:29 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/14 13:13:27 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/15 13:01:30 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ long	get_time(struct timeval *timestamp)
 	return (time);
 }
 
-long	get_time_now()
+long	get_time_now(void)
 {
 	long			time;
 	struct timeval	timestamp;

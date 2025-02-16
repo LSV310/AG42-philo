@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/14 16:02:12 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/15 16:47:55 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,33 +54,54 @@ int	initialize_thread(t_data *data, pthread_t *threads, int i)
 	return (1);
 }
 
+int	create_all_threads(t_data *data, pthread_t *threads)
+{
+	int	i;
+
+	i = 0;
+	data->threads_finished = false;
+	data->threads_success = false;
+	while (i < data->number_of_philosophers)
+	{
+		if (!initialize_thread(data, threads, i))
+		{
+			data->threads_finished = true;
+			free_threads(threads, i);
+			free_mutexs(data, i);
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	data->start_ts = get_time_now();
+	data->threads_success = true;
+	data->threads_finished = true;
+}
+
 void	create_mutexs(t_data *data, int count)
 {
 	int	i;
 
-	if (count == 0)
-		return ;
 	if (pthread_mutex_init(&data->states_mutex, NULL))
-		exit(1);
+		exit(EXIT_FAILURE);
 	if (pthread_mutex_init(&data->printf_mutex, NULL))
-		(pthread_mutex_destroy(&data->states_mutex), exit(1));
-	data->forks = malloc(sizeof(pthread_mutex_t) * count);
-	if (!data->forks)
-		exit(1);
+		(pthread_mutex_destroy(&data->states_mutex), exit(EXIT_FAILURE));
+	if (pthread_mutex_init(&data->end_mutex, NULL))
+		(pthread_mutex_destroy(&data->states_mutex),
+			pthread_mutex_destroy(&data->printf_mutex), exit(EXIT_FAILURE));
 	i = 0;
 	while (i < count)
 	{
 		if (pthread_mutex_init(&data->forks[i], NULL))
 		{
 			free_mutexs(data, i);
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		i++;
 	}
 	i = 0;
 	data->forks_states = malloc(sizeof(int) * count);
 	if (!data->forks_states)
-		(free_mutexs(data, count), exit(1));
+		(free_mutexs(data, count), exit(EXIT_FAILURE));
 	while (i < count)
 		data->forks_states[i++] = 0;
 }
@@ -90,25 +111,23 @@ int	main(int ac, char **av)
 	t_data			data;
 	pthread_t		*threads;
 	struct timeval	current_time;
-	int				i;
 
 	if (ac < 5)
 		return (printf("Not enough arguments\n"), 1);
 	if (ac > 6)
 		return (printf("Too many arguments\n"), 1);
 	if (!fill_data(ac, av, &data))
-		return (1);
-	data.end = 0;
+		return (EXIT_FAILURE);
+	data.end = false;
+	data.forks = malloc(sizeof(pthread_mutex_t) * data.number_of_philosophers);
+	if (!data.forks)
+		return (EXIT_FAILURE);
 	create_mutexs(&data, data.number_of_philosophers);
 	threads = malloc(sizeof(pthread_t) * data.number_of_philosophers);
 	if (!threads)
 		return (1);
-	data.start_ts = get_time_now();
-	i = 0;
-	while (i < data.number_of_philosophers)
-	{
-		if (!initialize_thread(&data, threads, i++))
-			return (free_threads(threads, i), free_mutexs(&data, i), 1);
-	}
-	return (free_threads(threads, i), free_mutexs(&data, i), 0);
+	create_all_threads(&data, threads);
+	free_threads(threads, data.number_of_philosophers);
+	free_mutexs(&data, data.number_of_philosophers);
+	return (EXIT_SUCCESS);
 }
