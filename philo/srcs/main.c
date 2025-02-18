@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/15 16:47:55 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/18 15:26:13 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,11 @@ int	initialize_thread(t_data *data, pthread_t *threads, int i)
 	ini->data = data;
 	ini->current_num = i + 1;
 	if (pthread_create(&threads[i], NULL, &new_thread, ini))
-		return (0);
+		return (free(ini), 0);
 	return (1);
 }
 
-int	create_all_threads(t_data *data, pthread_t *threads)
+void	create_all_threads(t_data *data, pthread_t *threads)
 {
 	int	i;
 
@@ -81,13 +81,16 @@ void	create_mutexs(t_data *data, int count)
 {
 	int	i;
 
-	if (pthread_mutex_init(&data->states_mutex, NULL))
+	if (pthread_mutex_init(&data->fork_mutex, NULL))
 		exit(EXIT_FAILURE);
 	if (pthread_mutex_init(&data->printf_mutex, NULL))
-		(pthread_mutex_destroy(&data->states_mutex), exit(EXIT_FAILURE));
+		(pthread_mutex_destroy(&data->fork_mutex), exit(EXIT_FAILURE));
 	if (pthread_mutex_init(&data->end_mutex, NULL))
-		(pthread_mutex_destroy(&data->states_mutex),
-			pthread_mutex_destroy(&data->printf_mutex), exit(EXIT_FAILURE));
+	{
+		pthread_mutex_destroy(&data->fork_mutex);
+		pthread_mutex_destroy(&data->printf_mutex);
+		exit(EXIT_FAILURE);
+	}
 	i = 0;
 	while (i < count)
 	{
@@ -98,12 +101,6 @@ void	create_mutexs(t_data *data, int count)
 		}
 		i++;
 	}
-	i = 0;
-	data->forks_states = malloc(sizeof(int) * count);
-	if (!data->forks_states)
-		(free_mutexs(data, count), exit(EXIT_FAILURE));
-	while (i < count)
-		data->forks_states[i++] = 0;
 }
 
 int	main(int ac, char **av)

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/15 13:01:46 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/18 14:59:48 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,8 @@ void	free_mutexs(t_data *data, int allocated)
 		pthread_mutex_destroy(&data->forks[i++]);
 	pthread_mutex_destroy(&data->end_mutex);
 	pthread_mutex_destroy(&data->printf_mutex);
-	pthread_mutex_destroy(&data->states_mutex);
+	pthread_mutex_destroy(&data->fork_mutex);
 	free(data->forks);
-	free(data->forks_states);
 }
 
 bool	get_death(t_data *data)

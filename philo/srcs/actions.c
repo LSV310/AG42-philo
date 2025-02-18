@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/16 13:22:04 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/18 14:54:07 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,32 @@
 
 int	can_eat(t_philo *philo, t_data *data)
 {
-	if (data->end == 1)
+	if (get_death(data) == true)
 		return (0);
-	if (pthread_mutex_lock(&data->states_mutex))
+	if (get_death(data) == 1 || pthread_mutex_lock(&data->fork_mutex))
 		return (0);
-	if (!data->forks_states[philo->fork1] && !data->forks_states[philo->fork2])
+	if (get_death(data) == 1 || pthread_mutex_lock(&data->forks[philo->fork1]))
 	{
-		if (!lock_fork1(philo, data))
-			return (0);
-		if (!lock_fork2(philo, data))
-			return (0);
-		pthread_mutex_unlock(&data->states_mutex);
-		return (1);
+		pthread_mutex_unlock(&data->fork_mutex);
+		return (0);
 	}
-	pthread_mutex_unlock(&data->states_mutex);
-	return (0);
+	print_msg(philo->num, data, 0);
+	if (get_death(data) == 1 || pthread_mutex_lock(&data->forks[philo->fork2]))
+	{
+		pthread_mutex_unlock(&data->forks[philo->fork1]);
+		pthread_mutex_unlock(&data->fork_mutex);
+		return (0);
+	}
+	print_msg(philo->num, data, 0);
+	pthread_mutex_unlock(&data->fork_mutex);
+	return (1);
 }
 
 void	philo_sleep(t_philo *philo, t_data *data)
 {
 	long	ts;
 
-	if (data->end == 1)
+	if (get_death(data) == true)
 		return ;
 	ts = get_time_now();
 	if (philo->last_eat + data->time_to_die < ts + data->time_to_sleep)
@@ -55,35 +59,38 @@ void	philo_eat(t_philo *philo, t_data *data)
 {
 	long	ts;
 
-	if (data->end == 1)
+	if (get_death(data) == true)
+	{
+		release_forks(philo, data);
 		return ;
+	}
 	ts = get_time_now();
 	if (ts > philo->last_eat + data->time_to_die)
 	{
+		release_forks(philo, data);
 		die(philo, data);
 		return ;
 	}
 	philo->last_eat = get_time_now();
 	print_msg(philo->num, data, 1);
 	usleep(data->time_to_eat * 1000);
-	if (!release_forks(philo, data))
-		return ;
+	release_forks(philo, data);
 	philo_sleep(philo, data);
 }
 
 void	philo_think(t_philo *philo, t_data *data, bool first_think)
 {
-	if (data->end == 1)
+	if (get_death(data) == true)
 		return ;
 	print_msg(philo->num, data, 3);
 	if (first_think == true)
 		usleep(data->time_to_eat * 1000);
 	else
-		usleep(100);
+		usleep(50);
 	while (!can_eat(philo, data))
 	{
-		usleep(100);
-		if (data->end == 1)
+		usleep(50);
+		if (get_death(data) == true)
 			return ;
 		if (get_time_now() > philo->last_eat + data->time_to_die)
 		{
@@ -96,6 +103,9 @@ void	philo_think(t_philo *philo, t_data *data, bool first_think)
 
 void	die(t_philo *philo, t_data *data)
 {
-	data->end = true;
+	if (pthread_mutex_lock(&data->end_mutex))
+		return ;
+		data->end = true;
+	pthread_mutex_unlock(&data->end_mutex);
 	print_msg(philo->num, data, 4);
 }

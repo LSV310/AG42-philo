@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/16 12:57:35 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/18 14:07:49 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,8 @@ typedef struct s_data
 	long			time_to_sleep;
 	long			number_of_times_each_philosopher_must_eat;
 	long			start_ts;
-	int				*forks_states;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	states_mutex;
+	pthread_mutex_t	fork_mutex;
 	pthread_mutex_t	printf_mutex;
 	pthread_mutex_t	end_mutex;
 	bool			end;
@@ -78,6 +77,7 @@ long	get_sim_time(t_data *data);
 // utils
 void	free_threads(pthread_t *threads, int allocated);
 void	free_mutexs(t_data *data, int allocated);
+bool	get_death(t_data *data);
 long	get_time(struct timeval *timestamp);
 void	print_msg(long num, t_data *data, int msg);
 long	ft_atol(const char *nptr);
