@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/18 14:07:49 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/18 15:52:45 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,6 @@ void	philo_think(t_philo *philo, t_data *data, bool first_think);
 void	die(t_philo *philo, t_data *data);
 
 // forks
-int		lock_fork1(t_philo *philo, t_data *data);
-int		lock_fork2(t_philo *philo, t_data *data);
 int		release_forks(t_philo *philo, t_data *data);
 
 // time

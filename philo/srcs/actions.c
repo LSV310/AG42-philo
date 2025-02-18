@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/18 14:54:07 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/18 16:01:28 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,17 @@ int	can_eat(t_philo *philo, t_data *data)
 		pthread_mutex_unlock(&data->fork_mutex);
 		return (0);
 	}
-	print_msg(philo->num, data, 0);
 	if (get_death(data) == 1 || pthread_mutex_lock(&data->forks[philo->fork2]))
 	{
 		pthread_mutex_unlock(&data->forks[philo->fork1]);
 		pthread_mutex_unlock(&data->fork_mutex);
 		return (0);
+	}
+	print_msg(philo->num, data, 0);
+	if (get_death(data) == 1 || get_time_now() > philo->last_eat + data->time_to_die)
+	{
+		release_forks(philo, data);
+		return (pthread_mutex_unlock(&data->fork_mutex), 0);
 	}
 	print_msg(philo->num, data, 0);
 	pthread_mutex_unlock(&data->fork_mutex);
