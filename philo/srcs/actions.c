@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/19 17:23:49 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/19 18:07:42 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,19 @@ int	can_eat(t_philo *philo, t_data *data)
 {
 	if (get_death(data) == true)
 		return (0);
-	if (pthread_mutex_lock(&data->fork_mutex))
+	if (pthread_mutex_lock(&data->states_mutex))
 		return (0);
-	if (get_death(data) == 1 || pthread_mutex_lock(&data->forks[philo->fork1]))
+	if (!data->forks_states[philo->fork1] && !data->forks_states[philo->fork2])
 	{
-		pthread_mutex_unlock(&data->fork_mutex);
-		return (0);
+		if (!lock_fork1(philo, data))
+			return (0);
+		if (!lock_fork2(philo, data))
+			return (0);
+		pthread_mutex_unlock(&data->states_mutex);
+		return (1);
 	}
-	if (get_death(data) == 1 || pthread_mutex_lock(&data->forks[philo->fork2]))
-	{
-		pthread_mutex_unlock(&data->forks[philo->fork1]);
-		pthread_mutex_unlock(&data->fork_mutex);
-		return (0);
-	}
-	if (get_death(data) == 1 || get_time_now() > philo->last_eat + data->time_to_die)
-	{
-		release_forks(philo, data);
-		return (pthread_mutex_unlock(&data->fork_mutex), 0);
-	}
-	print_msg(philo->num, data, 0);
-	print_msg(philo->num, data, 0);
-	pthread_mutex_unlock(&data->fork_mutex);
-	return (1);
+	pthread_mutex_unlock(&data->states_mutex);
+	return (0);
 }
 
 void	philo_sleep(t_philo *philo, t_data *data)
@@ -110,7 +101,7 @@ void	die(t_philo *philo, t_data *data)
 {
 	if (pthread_mutex_lock(&data->end_mutex))
 		return ;
-		data->end = true;
+	data->end = true;
 	pthread_mutex_unlock(&data->end_mutex);
 	print_msg(philo->num, data, 4);
 }

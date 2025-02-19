@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/18 14:59:48 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/19 18:06:52 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	free_mutexs(t_data *data, int allocated)
 		pthread_mutex_destroy(&data->forks[i++]);
 	pthread_mutex_destroy(&data->end_mutex);
 	pthread_mutex_destroy(&data->printf_mutex);
-	pthread_mutex_destroy(&data->fork_mutex);
+	pthread_mutex_destroy(&data->states_mutex);
 	free(data->forks);
 }
 

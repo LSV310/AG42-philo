@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/18 15:52:45 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/19 17:59:57 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ typedef struct s_data
 	long			number_of_times_each_philosopher_must_eat;
 	long			start_ts;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	fork_mutex;
+	int				*forks_states;
+	pthread_mutex_t	states_mutex;
 	pthread_mutex_t	printf_mutex;
 	pthread_mutex_t	end_mutex;
 	bool			end;
@@ -65,7 +66,9 @@ void	philo_think(t_philo *philo, t_data *data, bool first_think);
 void	die(t_philo *philo, t_data *data);
 
 // forks
-int		release_forks(t_philo *philo, t_data *data);
+int		lock_fork1(t_philo *philo, t_data *data);
+int		lock_fork2(t_philo *philo, t_data *data);
+void	release_forks(t_philo *philo, t_data *data);
 
 // time
 long	get_time(struct timeval *timestamp);

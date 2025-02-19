@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/18 15:26:13 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/19 18:08:14 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,26 +81,35 @@ void	create_mutexs(t_data *data, int count)
 {
 	int	i;
 
-	if (pthread_mutex_init(&data->fork_mutex, NULL))
+	if (pthread_mutex_init(&data->states_mutex, NULL))
 		exit(EXIT_FAILURE);
 	if (pthread_mutex_init(&data->printf_mutex, NULL))
-		(pthread_mutex_destroy(&data->fork_mutex), exit(EXIT_FAILURE));
+		(pthread_mutex_destroy(&data->states_mutex), exit(EXIT_FAILURE));
 	if (pthread_mutex_init(&data->end_mutex, NULL))
 	{
-		pthread_mutex_destroy(&data->fork_mutex);
+		pthread_mutex_destroy(&data->states_mutex);
 		pthread_mutex_destroy(&data->printf_mutex);
 		exit(EXIT_FAILURE);
 	}
+	data->forks = malloc(sizeof(pthread_mutex_t) * count);
+	if (!data->forks)
+		exit(1);
 	i = 0;
 	while (i < count)
 	{
 		if (pthread_mutex_init(&data->forks[i], NULL))
 		{
 			free_mutexs(data, i);
-			exit(EXIT_FAILURE);
+			exit(1);
 		}
 		i++;
 	}
+	i = 0;
+	data->forks_states = malloc(sizeof(int) * count);
+	if (!data->forks_states)
+		(free_mutexs(data, count), exit(1));
+	while (i < count)
+		data->forks_states[i++] = 0;
 }
 
 int	main(int ac, char **av)
