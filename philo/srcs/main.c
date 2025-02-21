@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/21 12:13:41 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/21 12:50:39 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	create_mutexs(t_data *data, int count)
 
 	if (pthread_mutex_init(&data->lock, NULL))
 		(free(data->forks), exit(EXIT_FAILURE));
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->number_of_philosophers);
+	data->forks = malloc(sizeof(pthread_mutex_t) * count);
 	if (!data->forks)
 		exit(EXIT_FAILURE);
 	i = 0;

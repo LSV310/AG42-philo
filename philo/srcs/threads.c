@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/21 12:27:44 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/21 13:09:20 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,10 @@ int	all_threads_created(t_data *data, t_philo *philo)
 {
 	pthread_mutex_lock(&data->lock);
 	if (data->threads_success == false)
+	{
+		pthread_mutex_unlock(&data->lock);
 		return (0);
+	}
 	pthread_mutex_unlock(&data->lock);
 	return (1);
 }
