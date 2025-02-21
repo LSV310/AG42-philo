@@ -7,7 +7,7 @@ OBJ_DIR		= objs/
 
 CFLAGS		+= -I$(INCLUDES)
 
-SRC			= main.c utils.c threads.c actions.c forks.c time.c
+SRC			= main.c utils.c threads.c actions.c eating.c time.c
 OBJ			= $(patsubst %.c, $(OBJ_DIR)%.o, $(SRC))
 
 NAME		= philo

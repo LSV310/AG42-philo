@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/19 17:59:57 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/21 12:22:09 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct s_philo
 	long	last_eat;
 	int		fork1;
 	int		fork2;
+	bool	finished_eating;
 }	t_philo;
 
 typedef struct s_data
@@ -37,16 +38,14 @@ typedef struct s_data
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
-	long			number_of_times_each_philosopher_must_eat;
+	long			times_must_eat;
 	long			start_ts;
-	pthread_mutex_t	*forks;
 	int				*forks_states;
-	pthread_mutex_t	states_mutex;
-	pthread_mutex_t	printf_mutex;
-	pthread_mutex_t	end_mutex;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	lock;
+	int				finished_amount;
 	bool			end;
 	bool			threads_success;
-	bool			threads_finished;
 }	t_data;
 
 typedef struct s_newthread
@@ -65,9 +64,8 @@ void	philo_eat(t_philo *philo, t_data *data);
 void	philo_think(t_philo *philo, t_data *data, bool first_think);
 void	die(t_philo *philo, t_data *data);
 
-// forks
-int		lock_fork1(t_philo *philo, t_data *data);
-int		lock_fork2(t_philo *philo, t_data *data);
+// eating
+bool	finished_eating(t_philo *philo, t_data *data);
 void	release_forks(t_philo *philo, t_data *data);
 
 // time

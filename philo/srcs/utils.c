@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/19 18:06:52 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/20 17:01:27 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,9 @@ void	free_mutexs(t_data *data, int allocated)
 	i = 0;
 	while (i < allocated)
 		pthread_mutex_destroy(&data->forks[i++]);
-	pthread_mutex_destroy(&data->end_mutex);
-	pthread_mutex_destroy(&data->printf_mutex);
-	pthread_mutex_destroy(&data->states_mutex);
+	pthread_mutex_destroy(&data->lock);
 	free(data->forks);
+	free(data->forks_states);
 }
 
 bool	get_death(t_data *data)
@@ -40,11 +39,10 @@ bool	get_death(t_data *data)
 	bool	end;
 
 	end = false;
-	if (pthread_mutex_lock(&data->end_mutex))
-		return (true);
+	pthread_mutex_lock(&data->lock);
 	if (data->end == true)
 		end = true;
-	pthread_mutex_unlock(&data->end_mutex);
+	pthread_mutex_unlock(&data->lock);
 	return (end);
 }
 
@@ -52,12 +50,16 @@ void	print_msg(long num, t_data *data, int msg)
 {
 	long	ms;
 
-	if (pthread_mutex_lock(&data->printf_mutex))
-		return ;
+	pthread_mutex_lock(&data->lock);
 	ms = get_sim_time(data);
+	if (msg != 4 && data->end == true)
+	{
+		pthread_mutex_unlock(&data->lock);
+		return ;
+	}
 	if (msg == 0)
 		printf("%ld %ld has taken a fork\n", ms, num);
-	else if (msg == 1)
+	if (msg == 1)
 		printf("%ld %ld is eating\n", ms, num);
 	else if (msg == 2)
 		printf("%ld %ld is sleeping\n", ms, num);
@@ -65,7 +67,7 @@ void	print_msg(long num, t_data *data, int msg)
 		printf("%ld %ld is thinking\n", ms, num);
 	else if (msg == 4)
 		printf("%ld %ld died\n", ms, num);
-	pthread_mutex_unlock(&data->printf_mutex);
+	pthread_mutex_unlock(&data->lock);
 }
 
 long	ft_atol(const char *nptr)

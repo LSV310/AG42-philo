@@ -1,52 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   forks.c                                            :+:      :+:    :+:   */
+/*   eating.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:20:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/19 17:59:42 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/21 12:24:40 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	lock_fork1(t_philo *philo, t_data *data)
+bool	finished_eating(t_philo *philo, t_data *data)
 {
-	data->forks_states[philo->fork1] = 1;
-	if (pthread_mutex_lock(&data->forks[philo->fork1]))
+	philo->eating_count++;
+	pthread_mutex_lock(&data->lock);
+	if (data->end == true)
 	{
-		data->forks_states[philo->fork1] = 0;
-		pthread_mutex_unlock(&data->states_mutex);
-		return (0);
+		pthread_mutex_unlock(&data->lock);
+		return (true);
 	}
-	print_msg(philo->num, data, 0);
-	return (1);
-}
-
-int	lock_fork2(t_philo *philo, t_data *data)
-{
-	data->forks_states[philo->fork2] = 1;
-	if (pthread_mutex_lock(&data->forks[philo->fork2]))
+	if (data->times_must_eat != -1 && philo->finished_eating == false
+		&& philo->eating_count >= data->times_must_eat)
 	{
-		pthread_mutex_unlock(&data->forks[philo->fork1]);
-		data->forks_states[philo->fork1] = 0;
-		data->forks_states[philo->fork2] = 0;
-		pthread_mutex_unlock(&data->states_mutex);
-		return (0);
+		philo->finished_eating = true;
+		data->finished_amount++;
 	}
-	print_msg(philo->num, data, 0);
-	return (1);
+	if (data->finished_amount >= data->number_of_philosophers)
+	{
+		data->end = true;
+		pthread_mutex_unlock(&data->lock);
+		return (true);
+	}
+	pthread_mutex_unlock(&data->lock);
+	return (false);
 }
 
 void	release_forks(t_philo *philo, t_data *data)
 {
 	pthread_mutex_unlock(&data->forks[philo->fork1]);
 	pthread_mutex_unlock(&data->forks[philo->fork2]);
-	if (pthread_mutex_lock(&data->states_mutex))
-		return ;
+	pthread_mutex_lock(&data->lock);
 	data->forks_states[philo->fork1] = 0;
 	data->forks_states[philo->fork2] = 0;
-	pthread_mutex_unlock(&data->states_mutex);
+	pthread_mutex_unlock(&data->lock);
 }

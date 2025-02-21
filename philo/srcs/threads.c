@@ -6,30 +6,38 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/19 17:55:59 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/21 12:27:44 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	attribute_forks(t_data *data, t_philo *philo)
+void	attribute_forks(t_data *data, t_philo *philo)
 {
-	philo->fork1 = philo->num - 1;
-	if (philo->num == data->number_of_philosophers)
-		philo->fork2 = 0;
+	if (philo->num % 2 == 1)
+	{
+		if (philo->num == data->number_of_philosophers)
+			philo->fork1 = 0;
+		else
+			philo->fork1 = philo->num;
+		philo->fork2 = philo->num - 1;
+	}
 	else
-		philo->fork2 = philo->num;
-	if (philo->fork1 == philo->fork2)
-		return (0);
-	return (1);
+	{
+		philo->fork1 = philo->num - 1;
+		if (philo->num == data->number_of_philosophers)
+			philo->fork2 = 0;
+		else
+			philo->fork2 = philo->num;
+	}
 }
 
 int	all_threads_created(t_data *data, t_philo *philo)
 {
-	while (data->threads_finished == false)
-		usleep(10);
+	pthread_mutex_lock(&data->lock);
 	if (data->threads_success == false)
 		return (0);
+	pthread_mutex_unlock(&data->lock);
 	return (1);
 }
 
@@ -37,9 +45,10 @@ void	philo_start(t_data *data, t_philo *philo)
 {
 	if (philo->num % 2 == 1)
 	{
-		while (!can_eat(philo, data))
-			usleep(10);
-		philo_eat(philo, data);
+		if (!can_eat(philo, data))
+			philo_think(philo, data, false);
+		else
+			philo_eat(philo, data);
 	}
 	else
 		philo_think(philo, data, true);
@@ -57,9 +66,16 @@ void	*new_thread(void *arg)
 	if (!all_threads_created(data, &philo))
 		return (NULL);
 	philo.last_eat = data->start_ts;
-	if (!attribute_forks(data, &philo))
+	philo.finished_eating = false;
+	if (data->times_must_eat == 0)
+		return (NULL);
+	attribute_forks(data, &philo);
+	if (data->number_of_philosophers == 1)
 	{
+		pthread_mutex_lock(&data->forks[philo.fork1]);
+		print_msg(philo.num, data, 0);
 		usleep(data->time_to_die * 1000);
+		pthread_mutex_unlock(&data->forks[philo.fork1]);
 		die(&philo, data);
 		return (NULL);
 	}

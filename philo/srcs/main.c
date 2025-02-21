@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/19 18:08:14 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/21 12:13:41 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,15 @@ int	fill_data(int ac, char **av, t_data *data)
 		return (printf("Invalid time to sleep\n"), 0);
 	if (ac == 6)
 	{
-		data->number_of_times_each_philosopher_must_eat = ft_atol(av[5]);
-		if (data->number_of_times_each_philosopher_must_eat < 0)
+		data->times_must_eat = ft_atol(av[5]);
+		if (data->times_must_eat < 0)
 		{
 			printf("Invalid number of times each philosopher must eat\n");
 			return (0);
 		}
 	}
 	else
-		data->number_of_times_each_philosopher_must_eat = -1;
+		data->times_must_eat = -1;
 	return (1);
 }
 
@@ -59,13 +59,13 @@ void	create_all_threads(t_data *data, pthread_t *threads)
 	int	i;
 
 	i = 0;
-	data->threads_finished = false;
+	pthread_mutex_lock(&data->lock);
 	data->threads_success = false;
 	while (i < data->number_of_philosophers)
 	{
 		if (!initialize_thread(data, threads, i))
 		{
-			data->threads_finished = true;
+			pthread_mutex_unlock(&data->lock);
 			free_threads(threads, i);
 			free_mutexs(data, i);
 			exit(EXIT_FAILURE);
@@ -74,34 +74,23 @@ void	create_all_threads(t_data *data, pthread_t *threads)
 	}
 	data->start_ts = get_time_now();
 	data->threads_success = true;
-	data->threads_finished = true;
+	pthread_mutex_unlock(&data->lock);
 }
 
 void	create_mutexs(t_data *data, int count)
 {
 	int	i;
 
-	if (pthread_mutex_init(&data->states_mutex, NULL))
-		exit(EXIT_FAILURE);
-	if (pthread_mutex_init(&data->printf_mutex, NULL))
-		(pthread_mutex_destroy(&data->states_mutex), exit(EXIT_FAILURE));
-	if (pthread_mutex_init(&data->end_mutex, NULL))
-	{
-		pthread_mutex_destroy(&data->states_mutex);
-		pthread_mutex_destroy(&data->printf_mutex);
-		exit(EXIT_FAILURE);
-	}
-	data->forks = malloc(sizeof(pthread_mutex_t) * count);
+	if (pthread_mutex_init(&data->lock, NULL))
+		(free(data->forks), exit(EXIT_FAILURE));
+	data->forks = malloc(sizeof(pthread_mutex_t) * data->number_of_philosophers);
 	if (!data->forks)
-		exit(1);
+		exit(EXIT_FAILURE);
 	i = 0;
 	while (i < count)
 	{
 		if (pthread_mutex_init(&data->forks[i], NULL))
-		{
-			free_mutexs(data, i);
-			exit(1);
-		}
+			(free_mutexs(data, i), exit(1));
 		i++;
 	}
 	i = 0;
@@ -125,13 +114,11 @@ int	main(int ac, char **av)
 	if (!fill_data(ac, av, &data))
 		return (EXIT_FAILURE);
 	data.end = false;
-	data.forks = malloc(sizeof(pthread_mutex_t) * data.number_of_philosophers);
-	if (!data.forks)
-		return (EXIT_FAILURE);
+	data.finished_amount = 0;
 	create_mutexs(&data, data.number_of_philosophers);
 	threads = malloc(sizeof(pthread_t) * data.number_of_philosophers);
 	if (!threads)
-		return (1);
+		return (free_mutexs(&data, data.number_of_philosophers), 1);
 	create_all_threads(&data, threads);
 	free_threads(threads, data.number_of_philosophers);
 	free_mutexs(&data, data.number_of_philosophers);
