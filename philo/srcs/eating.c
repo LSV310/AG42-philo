@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 14:20:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/21 12:24:40 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/24 14:51:09 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,14 @@ bool	finished_eating(t_philo *philo, t_data *data)
 	}
 	pthread_mutex_unlock(&data->lock);
 	return (false);
+}
+
+void	eat_usleep(t_philo *philo, t_data *data)
+{
+	if (data->time_to_die < data->time_to_eat)
+		usleep(data->time_to_die * 1000);
+	else
+		usleep(data->time_to_eat * 1000);
 }
 
 void	release_forks(t_philo *philo, t_data *data)

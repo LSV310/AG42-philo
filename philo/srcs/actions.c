@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/21 12:45:10 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/24 15:22:27 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,45 @@ int	can_eat(t_philo *philo, t_data *data)
 	return (0);
 }
 
+void	philo_eat(t_philo *philo, t_data *data)
+{
+	if (get_death(data) == true)
+	{
+		release_forks(philo, data);
+		return ;
+	}
+	if (get_time_now() > philo->last_eat + data->time_to_die)
+	{
+		release_forks(philo, data);
+		die(philo, data);
+		return ;
+	}
+	philo->last_eat = get_time_now();
+	print_msg(philo->num, data, 1);
+	if (finished_eating(philo, data) == true)
+	{
+		eat_usleep(philo, data);
+		release_forks(philo, data);
+		return ;
+	}
+	eat_usleep(philo, data);
+	release_forks(philo, data);
+	philo_sleep(philo, data);
+}
+
 void	philo_sleep(t_philo *philo, t_data *data)
 {
 	long	ts;
 
 	if (get_death(data) == true)
 		return ;
-	ts = get_time_now();
+	if (get_time_now() > philo->last_eat + data->time_to_die)
+	{
+		die(philo, data);
+		return ;
+	}
 	print_msg(philo->num, data, 2);
+	ts = get_time_now();
 	if (philo->last_eat + data->time_to_die < ts + data->time_to_sleep)
 	{
 		usleep((philo->last_eat + data->time_to_die - ts) * 1000);
@@ -50,35 +81,6 @@ void	philo_sleep(t_philo *philo, t_data *data)
 		usleep(data->time_to_sleep * 1000);
 		philo_think(philo, data, false);
 	}
-}
-
-void	philo_eat(t_philo *philo, t_data *data)
-{
-	long	ts;
-
-	if (get_death(data) == true)
-	{
-		release_forks(philo, data);
-		return ;
-	}
-	ts = get_time_now();
-	if (ts > philo->last_eat + data->time_to_die)
-	{
-		release_forks(philo, data);
-		die(philo, data);
-		return ;
-	}
-	philo->last_eat = get_time_now();
-	print_msg(philo->num, data, 1);
-	if (finished_eating(philo, data) == true)
-	{
-		usleep(data->time_to_eat * 1000);
-		release_forks(philo, data);
-		return ;
-	}
-	usleep(data->time_to_eat * 1000);
-	release_forks(philo, data);
-	philo_sleep(philo, data);
 }
 
 void	philo_think(t_philo *philo, t_data *data, bool first_think)

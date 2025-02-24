@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/21 12:22:09 by agruet           ###   ########.fr       */
+/*   Updated: 2025/02/24 14:53:10 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	die(t_philo *philo, t_data *data);
 
 // eating
 bool	finished_eating(t_philo *philo, t_data *data);
+void	eat_usleep(t_philo *philo, t_data *data);
 void	release_forks(t_philo *philo, t_data *data);
 
 // time
