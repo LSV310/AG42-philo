@@ -6,68 +6,45 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/20 17:01:27 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/18 17:20:32 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../includes/philo.h"
 
-void	free_threads(pthread_t *threads, int allocated)
+void	exit_all(t_data *data)
 {
-	int	i;
-
-	i = 0;
-	while (i < allocated)
-		pthread_join(threads[i++], NULL);
-	free(threads);
-}
-
-void	free_mutexs(t_data *data, int allocated)
-{
-	int	i;
-
-	i = 0;
-	while (i < allocated)
-		pthread_mutex_destroy(&data->forks[i++]);
-	pthread_mutex_destroy(&data->lock);
-	free(data->forks);
-	free(data->forks_states);
-}
-
-bool	get_death(t_data *data)
-{
-	bool	end;
-
-	end = false;
-	pthread_mutex_lock(&data->lock);
-	if (data->end == true)
-		end = true;
-	pthread_mutex_unlock(&data->lock);
-	return (end);
+	if (data->pids)
+		free(data->pids);
+	if (!data->fork_sem)
+		return ;
+	sem_close(data->fork_sem);
+	sem_unlink("/forks");
+	if (!data->finish_sem)
+		return ;
+	sem_close(data->finish_sem);
+	sem_unlink("/finished");
+	if (data->quit_sem)
+		return ;
+	sem_close(data->quit_sem);
+	sem_unlink("/quit");
 }
 
 void	print_msg(long num, t_data *data, int msg)
 {
 	long	ms;
 
-	pthread_mutex_lock(&data->lock);
 	ms = get_sim_time(data);
-	if (msg != 4 && data->end == true)
-	{
-		pthread_mutex_unlock(&data->lock);
-		return ;
-	}
 	if (msg == 0)
-		printf("%ld %ld has taken a fork\n", ms, num);
-	if (msg == 1)
-		printf("%ld %ld is eating\n", ms, num);
+		new_printf(ms, num, "has taken a fork");
+	else if (msg == 1)
+		new_printf(ms, num, "is eating");
 	else if (msg == 2)
-		printf("%ld %ld is sleeping\n", ms, num);
+		new_printf(ms, num, "is sleeping");
 	else if (msg == 3)
-		printf("%ld %ld is thinking\n", ms, num);
+		new_printf(ms, num, "is thinking");
 	else if (msg == 4)
-		printf("%ld %ld died\n", ms, num);
-	pthread_mutex_unlock(&data->lock);
+		new_printf(ms, num, "died");
 }
 
 long	ft_atol(const char *nptr)

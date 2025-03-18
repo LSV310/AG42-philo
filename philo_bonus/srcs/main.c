@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/17 17:07:47 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/18 17:21:43 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,29 +40,16 @@ int	fill_data(int ac, char **av, t_data *data)
 	return (1);
 }
 
-void	kill_all(pid_t *pids, int amount)
-{
-	int	i;
-
-	if (!pids)
-		return ;
-	i = 0;
-	while (i < amount && pids[i])
-	{
-		kill(pids[i], SIGKILL);
-		i++;
-	}
-}
-
 pid_t	*create_all_processes(t_data *data)
 {
 	int	i;
 
 	data->pids = malloc(sizeof(pid_t) * (data->number_of_philosophers + 1));
-	if(!data->pids)
+	if (!data->pids)
 		return (NULL);
 	memset(data->pids, 0, data->number_of_philosophers * sizeof(pid_t));
 	i = 0;
+	data->start_ts = get_time_now();
 	while (i < data->number_of_philosophers)
 	{
 		data->pids[i] = fork();
@@ -80,41 +67,10 @@ pid_t	*create_all_processes(t_data *data)
 	return (data->pids);
 }
 
-void	rm_semaphore(sem_t *sem)
-{
-	sem_close(sem);
-	sem_unlink("/forks");
-}
-
-int	wait_all(t_data *data, int amount)
-{
-	int	i;
-	int	status;
-
-	i = 0;
-	while (i < amount && data->pids[i])
-	{
-		wait(&status);
-		if (WIFEXITED(status))
-		{
-			if (WEXITSTATUS(status) == 1)
-			{
-				kill_all(data->pids, amount);
-				return (1);
-			}
-			else
-				data->finished_amount++;
-		}
-		i++;
-	}
-	return (0);
-}
-
 int	main(int ac, char **av)
 {
 	t_data			data;
 	struct timeval	current_time;
-	sem_t			*sem;
 
 	if (ac < 5)
 		return (printf("Not enough arguments\n"), 1);
@@ -122,16 +78,19 @@ int	main(int ac, char **av)
 		return (printf("Too many arguments\n"), 1);
 	if (!fill_data(ac, av, &data))
 		return (EXIT_FAILURE);
-	data.end = false;
-	data.finished_amount = 0;
-	sem = sem_open("/forks", O_CREAT, 0644, data.number_of_philosophers);
-	if (sem == SEM_FAILED)
+	data.pids = NULL;
+	data.fork_sem = sem_open("/forks", O_CREAT, 0644, data.number_of_philosophers);
+	if (data.fork_sem == SEM_FAILED)
 		return (EXIT_FAILURE);
+	data.finish_sem = sem_open("/finished", O_CREAT, 0644, 0);
+	if (data.finish_sem == SEM_FAILED)
+		return (exit_all(&data), EXIT_FAILURE);
+	data.quit_sem = sem_open("/quit", O_CREAT, 0644, 0);
+	if (data.quit_sem == SEM_FAILED)
+		return (exit_all(&data), EXIT_FAILURE);
 	if (!create_all_processes(&data))
-		return (rm_semaphore(sem), EXIT_FAILURE);
-	if (wait_all(&data, data.number_of_philosophers)
-		|| data.finished_amount != data.number_of_philosophers)
-		return (free(data.pids), EXIT_FAILURE);
-	free(data.pids);
+		return (exit_all(&data), EXIT_FAILURE);
+	wait_all(&data, data.number_of_philosophers);
+	exit_all(&data);
 	return (EXIT_SUCCESS);
 }

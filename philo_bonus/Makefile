@@ -1,5 +1,5 @@
 CC			= cc
-CFLAGS		= -g3 #-Wall -Werror -Wextra
+CFLAGS		= -ggdb #-Wall -Werror -Wextra
 
 INCLUDES	= includes/
 SRC_DIR		= srcs/
@@ -7,7 +7,7 @@ OBJ_DIR		= objs/
 
 CFLAGS		+= -I$(INCLUDES)
 
-SRC			= main.c utils.c processes.c actions.c eating.c time.c
+SRC			= main.c processes.c eating.c actions.c monitor_end.c time.c new_printf.c utils.c
 OBJ			= $(patsubst %.c, $(OBJ_DIR)%.o, $(SRC))
 
 NAME		= philo_bonus
