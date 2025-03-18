@@ -6,13 +6,13 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:18:59 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:21:18 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/18 17:48:15 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	quit_all(pid_t *pids, int amount)
+void	kill_all(pid_t *pids, int amount)
 {
 	int	i;
 
@@ -22,6 +22,18 @@ void	quit_all(pid_t *pids, int amount)
 	while (i < amount && pids[i])
 	{
 		kill(pids[i], SIGTERM);
+		i++;
+	}
+}
+
+void	quit_all(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->number_of_philosophers)
+	{
+		sem_post(data->quit_sem);
 		i++;
 	}
 }
@@ -36,6 +48,7 @@ void	*finish_monitoring(void *data)
 		sem_wait(((t_data *)data)->finish_sem);
 		i++;
 	}
+	quit_all(data);
 	return (NULL);
 }
 
@@ -44,19 +57,12 @@ void	wait_all(t_data *data, int amount)
 	int			i;
 	pthread_t	thread;
 
-	if (pthread_create(&thread, NULL, &finish_monitoring, data))
-	{
-		kill_all(data->pids, data->number_of_philosophers);
-		return ;
-	}
-	if (pthread_detach(thread))
-	{
-		kill_all(data->pids, data->number_of_philosophers);
-		return ;
-	}
+	pthread_create(&thread, NULL, &finish_monitoring, data);
+	pthread_detach(thread);
 	while (i < data->number_of_philosophers)
 	{
 		waitpid(-1, NULL, 0);
+		quit_all(data);
 		i++;
 	}
 	return ;

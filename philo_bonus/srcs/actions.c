@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:14:57 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/18 17:52:38 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,9 @@ void	die(t_philo *philo, t_data *data)
 		sem_post(data->fork_sem);
 	if (philo->fork2 == true)
 		sem_post(data->fork_sem);
-	sem_close(data->fork_sem);
+	/* sem_close(data->fork_sem);
 	sem_close(data->finish_sem);
-	sem_close(data->quit_sem);
+	sem_close(data->quit_sem); */
 	print_msg(philo->num, data, 4);
 	exit(EXIT_FAILURE);
 }

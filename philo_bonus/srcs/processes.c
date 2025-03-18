@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:14:31 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/18 17:51:44 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	*new_process(t_data *data, int nb)
 	philo.last_eat = data->start_ts;
 	if (data->times_must_eat == 0)
 		exit(EXIT_SUCCESS);
-	if (data->number_of_philosophers == 1)
+	if (data->number_of_philosophers == 1) // REMOVE THIS IF I'M GOOD
 	{
 		print_msg(philo.num, data, 0);
 		usleep(data->time_to_die * 1000);

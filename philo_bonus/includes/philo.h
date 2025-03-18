@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:20:39 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/18 17:26:34 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ void	new_printf(long timestamp, long id, char *message);
 // utils
 void	exit_all(t_data *data);
 void	kill_all(pid_t *pids, int amount);
+void	quit_all(t_data *data);
 void	wait_all(t_data *data, int amount);
 long	get_time(struct timeval *timestamp);
 void	print_msg(long num, t_data *data, int msg);

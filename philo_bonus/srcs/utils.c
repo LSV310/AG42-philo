@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:20:32 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/18 17:37:24 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	exit_all(t_data *data)
 		return ;
 	sem_close(data->finish_sem);
 	sem_unlink("/finished");
-	if (data->quit_sem)
+	if (!data->quit_sem)
 		return ;
 	sem_close(data->quit_sem);
 	sem_unlink("/quit");
