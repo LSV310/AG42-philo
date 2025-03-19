@@ -6,11 +6,23 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/19 14:54:31 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 00:09:40 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+int	all_threads_created(t_data *data, t_philo *philo)
+{
+	pthread_mutex_lock(&data->lock);
+	if (data->threads_success == false)
+	{
+		pthread_mutex_unlock(&data->lock);
+		return (0);
+	}
+	pthread_mutex_unlock(&data->lock);
+	return (1);
+}
 
 void	attribute_forks(t_data *data, t_philo *philo)
 {
@@ -32,29 +44,48 @@ void	attribute_forks(t_data *data, t_philo *philo)
 	}
 }
 
-int	all_threads_created(t_data *data, t_philo *philo)
+static t_action	first_action(t_data *data, t_philo *philo)
 {
-	pthread_mutex_lock(&data->lock);
-	if (data->threads_success == false)
+	if (philo->num % 2 == 1)
 	{
-		pthread_mutex_unlock(&data->lock);
-		return (0);
+		while (!can_eat(philo, data))
+		{
+			if (get_time_now() > philo->last_eat + data->time_to_die)
+			{
+				die(philo, data);
+				return (DYING);
+			}
+			usleep(10);
+		}
+		philo_eat(philo, data);
+		return (EATING);
 	}
-	pthread_mutex_unlock(&data->lock);
-	return (1);
+	else
+	{
+		philo_think(philo, data, true);
+		return (THINKING);
+	}
 }
 
 void	philo_start(t_data *data, t_philo *philo)
 {
-	if (philo->num % 2 == 1)
+	t_action	action;
+
+	action = first_action(data, philo);
+	if (action == DYING)
+		return ;
+	while (true)
 	{
-		if (!can_eat(philo, data))
-			philo_think(philo, data, false);
-		else
-			philo_eat(philo, data);
+		action++;
+		if (action > THINKING)
+			action = EATING;
+		if (action == EATING && philo_eat(philo, data))
+			return ;
+		else if (action == SLEEPING && philo_sleep(philo, data))
+			return ;
+		else if (action == THINKING && philo_think(philo, data, false))
+			return ;
 	}
-	else
-		philo_think(philo, data, true);
 }
 
 void	*new_thread(void *arg)

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/02/24 14:53:10 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/19 22:41:25 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,22 @@ typedef struct s_newthread
 	int		current_num;
 }	t_newthread;
 
+typedef enum ACTIONS
+{
+	DYING,
+	EATING,
+	SLEEPING,
+	THINKING
+}	t_action;
+
 // threads
 void	*new_thread(void *data);
 
 // actions
 int		can_eat(t_philo *philo, t_data *data);
-void	philo_sleep(t_philo *philo, t_data *data);
-void	philo_eat(t_philo *philo, t_data *data);
-void	philo_think(t_philo *philo, t_data *data, bool first_think);
+int		philo_sleep(t_philo *philo, t_data *data);
+int		philo_eat(t_philo *philo, t_data *data);
+int		philo_think(t_philo *philo, t_data *data, bool first_think);
 void	die(t_philo *philo, t_data *data);
 
 // eating

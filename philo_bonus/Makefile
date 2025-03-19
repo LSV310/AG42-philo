@@ -7,7 +7,7 @@ OBJ_DIR		= objs/
 
 CFLAGS		+= -I$(INCLUDES)
 
-SRC			= main.c processes.c eating.c actions.c monitor_end.c time.c new_printf.c utils.c
+SRC			= main.c processes.c eating.c actions.c end_monitoring.c philo_monitoring.c time.c print_safe.c utils.c
 OBJ			= $(patsubst %.c, $(OBJ_DIR)%.o, $(SRC))
 
 NAME		= philo_bonus

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/19 14:45:01 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 00:17:24 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,15 @@ void	print_msg(long num, t_data *data, int msg)
 
 	ms = get_sim_time(data);
 	if (msg == 0)
-		new_printf(ms, num, "has taken a fork");
+		print_safe(ms, num, "has taken a fork");
 	else if (msg == 1)
-		new_printf(ms, num, "is eating");
+		print_safe(ms, num, "is eating");
 	else if (msg == 2)
-		new_printf(ms, num, "is sleeping");
+		print_safe(ms, num, "is sleeping");
 	else if (msg == 3)
-		new_printf(ms, num, "is thinking");
+		print_safe(ms, num, "is thinking");
 	else if (msg == 4)
-		new_printf(ms, num, "died");
+		print_safe(ms, num, "died");
 }
 
 long	ft_atol(const char *nptr)

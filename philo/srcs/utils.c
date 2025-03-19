@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/19 14:54:34 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/19 22:49:13 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	print_msg(long num, t_data *data, int msg)
 	}
 	if (msg == 0)
 		printf("%ld %ld has taken a fork\n", ms, num);
-	if (msg == 1)
+	else if (msg == 1)
 		printf("%ld %ld is eating\n", ms, num);
 	else if (msg == 2)
 		printf("%ld %ld is sleeping\n", ms, num);

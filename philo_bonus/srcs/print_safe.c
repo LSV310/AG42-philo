@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   new_printf.c                                       :+:      :+:    :+:   */
+/*   print_safe.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:00:05 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 14:29:25 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 00:17:06 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static void	itoa_custom(long num, char *str)
 	str[i] = '\0';
 }
 
-void	new_printf(long timestamp, long id, char *message)
+void	print_safe(long timestamp, long id, char *message)
 {
 	char	buffer[100];
 	char	time_str[20];

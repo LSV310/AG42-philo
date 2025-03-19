@@ -6,66 +6,57 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/19 13:09:48 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 00:15:35 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	*death_monitoring(void *param)
+static t_action	first_action(t_data *data, t_philo *philo)
 {
-	const t_routine	*routine_param = (t_routine *)param;
-	const t_data	*data = routine_param->data;
-	const t_philo	*philo = routine_param->philo;
-
-	while (1)
+	if (philo->num % 2 == 1)
 	{
-		if (get_time_now() > philo->last_eat + data->time_to_die)
-			die((t_philo *)philo, (t_data *)data);
-		usleep(10);
+		while (!can_eat(philo, data))
+		{
+			if (get_time_now() > philo->last_eat + data->time_to_die)
+			{
+				die(philo, data);
+				return (DYING);
+			}
+			usleep(10);
+		}
+		philo_eat(philo, data);
+		return (EATING);
 	}
-}
-
-void	*quit_monitoring(void *param)
-{
-	const t_routine	*routine_param = (t_routine *)param;
-	const t_data	*data = routine_param->data;
-	const t_philo	*philo = routine_param->philo;
-
-	sem_wait(data->quit_sem);
-	sem_close(data->fork_sem);
-	sem_close(data->finish_sem);
-	sem_close(data->quit_sem);
-	exit(EXIT_SUCCESS);
+	else
+	{
+		philo_think(philo, data, true);
+		return (THINKING);
+	}
 }
 
 void	philo_start(t_data *data, t_philo *philo)
 {
-	pthread_t	thread1;
-	pthread_t	thread2;
-	t_routine	routine_param;
+	t_action	action;
 
 	philo->fork1 = false;
 	philo->fork2 = false;
-	routine_param.data = data;
-	routine_param.philo = philo;
-	if (pthread_create(&thread1, NULL, &death_monitoring, &routine_param))
+	start_monitoring(data, philo);
+	action = first_action(data, philo);
+	if (action == DYING)
 		return ;
-	if (pthread_detach(thread1))
-		return ;
-	if (pthread_create(&thread2, NULL, &quit_monitoring, &routine_param))
-		return ;
-	if (pthread_detach(thread2))
-		return ;
-	if (philo->num % 2 == 1)
+	while (true)
 	{
-		if (!can_eat(philo, data))
-			philo_think(philo, data, false);
-		else
-			philo_eat(philo, data);
+		action++;
+		if (action > THINKING)
+			action = EATING;
+		if (action == EATING && philo_eat(philo, data))
+			return ;
+		else if (action == SLEEPING && philo_sleep(philo, data))
+			return ;
+		else if (action == THINKING && philo_think(philo, data, false))
+			return ;
 	}
-	else
-		philo_think(philo, data, true);
 }
 
 void	*new_process(t_data *data, int nb)

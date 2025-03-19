@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:26:34 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 00:17:24 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,23 @@ typedef struct	s_routine
 	t_philo	*philo;
 }	t_routine;
 
+typedef enum ACTIONS
+{
+	DYING,
+	EATING,
+	SLEEPING,
+	THINKING
+}	t_action;
+
 // processes
 void	*new_process(t_data *data, int nb);
+void	start_monitoring(t_data *data, t_philo *philo);
 
 // actions
 int		can_eat(t_philo *philo, t_data *data);
-void	philo_sleep(t_philo *philo, t_data *data);
-void	philo_eat(t_philo *philo, t_data *data);
-void	philo_think(t_philo *philo, t_data *data, bool first_think);
+int		philo_sleep(t_philo *philo, t_data *data);
+int		philo_eat(t_philo *philo, t_data *data);
+int		philo_think(t_philo *philo, t_data *data, bool first_think);
 void	die(t_philo *philo, t_data *data);
 
 // eating
@@ -77,8 +86,8 @@ long	get_time(struct timeval *timestamp);
 long	get_time_now(void);
 long	get_sim_time(t_data *data);
 
-// new_printf
-void	new_printf(long timestamp, long id, char *message);
+// print_safe
+void	print_safe(long timestamp, long id, char *message);
 
 // utils
 void	exit_all(t_data *data);

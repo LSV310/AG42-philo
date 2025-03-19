@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/19 15:06:59 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 00:21:35 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	can_eat(t_philo *philo, t_data *data)
 	return (1);
 }
 
-void	philo_eat(t_philo *philo, t_data *data)
+int	philo_eat(t_philo *philo, t_data *data)
 {
 	if (get_time_now() > philo->last_eat + data->time_to_die)
 		die(philo, data);
@@ -43,10 +43,10 @@ void	philo_eat(t_philo *philo, t_data *data)
 		usleep(data->time_to_eat * 1000);
 	release_forks(philo, data);
 	is_finished(philo, data);
-	philo_sleep(philo, data);
+	return (0);
 }
 
-void	philo_sleep(t_philo *philo, t_data *data)
+int	philo_sleep(t_philo *philo, t_data *data)
 {
 	long	ts;
 
@@ -59,14 +59,11 @@ void	philo_sleep(t_philo *philo, t_data *data)
 		usleep((philo->last_eat + data->time_to_die - ts) * 1000);
 		die(philo, data);
 	}
-	else
-	{
-		usleep(data->time_to_sleep * 1000);
-		philo_think(philo, data, false);
-	}
+	usleep(data->time_to_sleep * 1000);
+	return (0);
 }
 
-void	philo_think(t_philo *philo, t_data *data, bool first_think)
+int	philo_think(t_philo *philo, t_data *data, bool first_think)
 {
 	print_msg(philo->num, data, 3);
 	if (first_think == true)
@@ -79,7 +76,7 @@ void	philo_think(t_philo *philo, t_data *data, bool first_think)
 			die(philo, data);
 		usleep(10);
 	}
-	philo_eat(philo, data);
+	return (0);
 }
 
 void	die(t_philo *philo, t_data *data)
