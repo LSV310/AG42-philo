@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:51:44 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/19 13:09:48 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	*death_monitoring(void *param)
 	{
 		if (get_time_now() > philo->last_eat + data->time_to_die)
 			die((t_philo *)philo, (t_data *)data);
-		usleep(100);
+		usleep(10);
 	}
 }
 
@@ -53,7 +53,7 @@ void	philo_start(t_data *data, t_philo *philo)
 		return ;
 	if (pthread_detach(thread1))
 		return ;
-	if (pthread_create(&thread2, NULL, &death_monitoring, &routine_param))
+	if (pthread_create(&thread2, NULL, &quit_monitoring, &routine_param))
 		return ;
 	if (pthread_detach(thread2))
 		return ;

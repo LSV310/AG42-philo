@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/18 17:21:43 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/19 17:51:17 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,27 @@ pid_t	*create_all_processes(t_data *data)
 	return (data->pids);
 }
 
+int	create_sems(t_data *data)
+{
+	sem_unlink("/forks");
+	sem_unlink("/finished");
+	sem_unlink("/quit");
+	data->fork_sem = sem_open("/forks", O_CREAT, 0644, data->number_of_philosophers);
+	if (data->fork_sem == SEM_FAILED)
+		return (EXIT_FAILURE);
+	data->finish_sem = sem_open("/finished", O_CREAT, 0644, 0);
+	if (data->finish_sem == SEM_FAILED)
+		return (exit_all(data), EXIT_FAILURE);
+	sem_post(data->finish_sem);
+	sem_wait(data->finish_sem);
+	data->quit_sem = sem_open("/quit", O_CREAT, 0644, 0);
+	if (data->quit_sem == SEM_FAILED)
+		return (exit_all(data), EXIT_FAILURE);
+	sem_post(data->quit_sem);
+	sem_wait(data->quit_sem);
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
 	t_data			data;
@@ -79,15 +100,8 @@ int	main(int ac, char **av)
 	if (!fill_data(ac, av, &data))
 		return (EXIT_FAILURE);
 	data.pids = NULL;
-	data.fork_sem = sem_open("/forks", O_CREAT, 0644, data.number_of_philosophers);
-	if (data.fork_sem == SEM_FAILED)
+	if (create_sems(&data))
 		return (EXIT_FAILURE);
-	data.finish_sem = sem_open("/finished", O_CREAT, 0644, 0);
-	if (data.finish_sem == SEM_FAILED)
-		return (exit_all(&data), EXIT_FAILURE);
-	data.quit_sem = sem_open("/quit", O_CREAT, 0644, 0);
-	if (data.quit_sem == SEM_FAILED)
-		return (exit_all(&data), EXIT_FAILURE);
 	if (!create_all_processes(&data))
 		return (exit_all(&data), EXIT_FAILURE);
 	wait_all(&data, data.number_of_philosophers);
