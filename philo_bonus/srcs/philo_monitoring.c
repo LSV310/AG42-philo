@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 00:14:18 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 00:25:47 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 14:09:25 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 void	*death_monitoring(void *param)
 {
 	const t_routine	*routine_param = (t_routine *)param;
-	const t_data	*data = routine_param->data;
-	const t_philo	*philo = routine_param->philo;
+	t_data			*data;
+	t_philo			*philo;
 
+	data = routine_param->data;
+	philo = routine_param->philo;
 	while (1)
 	{
 		if (get_time_now() > philo->last_eat + data->time_to_die)
@@ -47,6 +49,7 @@ void	start_monitoring(t_data *data, t_philo *philo)
 
 	routine_param.data = data;
 	routine_param.philo = philo;
+	printf("%p\n", data->quit_sem);
 	if (pthread_create(&thread1, NULL, &death_monitoring, &routine_param)
 		|| pthread_detach(thread1)
 		|| pthread_create(&thread2, NULL, &quit_monitoring, &routine_param)

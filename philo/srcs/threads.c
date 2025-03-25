@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 00:09:40 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 13:39:23 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,15 +48,8 @@ static t_action	first_action(t_data *data, t_philo *philo)
 {
 	if (philo->num % 2 == 1)
 	{
-		while (!can_eat(philo, data))
-		{
-			if (get_time_now() > philo->last_eat + data->time_to_die)
-			{
-				die(philo, data);
-				return (DYING);
-			}
-			usleep(10);
-		}
+		if (!can_eat(philo, data))
+			philo_think(philo, data, false);
 		philo_eat(philo, data);
 		return (EATING);
 	}

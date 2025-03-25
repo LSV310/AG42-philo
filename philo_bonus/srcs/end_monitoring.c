@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   monitor_end.c                                      :+:      :+:    :+:   */
+/*   end_monitoring.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:18:59 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/19 14:44:27 by agruet           ###   ########.fr       */
+/*   Updated: 2025/03/20 13:58:08 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,13 @@ void	*finish_monitoring(void *data)
 		i++;
 	}
 	quit_all(data);
-	kill_all(((t_data *)data)->pids, ((t_data *)data)->number_of_philosophers);
 	return (NULL);
 }
 
 void	wait_all(t_data *data, int amount)
 {
 	int			i;
+	int			status;
 	pthread_t	thread;
 
 	if (pthread_create(&thread, NULL, &finish_monitoring, data))
@@ -64,7 +64,7 @@ void	wait_all(t_data *data, int amount)
 	i = 0;
 	while (i < data->number_of_philosophers)
 	{
-		waitpid(-1, NULL, 0);
+		waitpid(-1, &status, 0);
 		quit_all(data);
 		i++;
 	}
