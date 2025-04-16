@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 13:39:23 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/16 13:03:01 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void	*new_thread(void *arg)
 	{
 		pthread_mutex_lock(&data->forks[philo.fork1]);
 		print_msg(philo.num, data, 0);
-		usleep(data->time_to_die * 1000);
+		ft_usleep(data->time_to_die * 1000);
 		pthread_mutex_unlock(&data->forks[philo.fork1]);
 		die(&philo, data);
 		return (NULL);

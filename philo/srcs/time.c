@@ -6,11 +6,20 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:08:29 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/19 14:54:33 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/16 13:06:24 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+void	ft_usleep(size_t usec)
+{
+	long	start;
+
+	start = get_time_now();
+	while (get_time_now() < start + usec / 1000)
+		usleep(10);
+}
 
 long	get_time(struct timeval *timestamp)
 {
