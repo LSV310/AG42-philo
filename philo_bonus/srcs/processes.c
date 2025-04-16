@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 14:05:03 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/16 13:10:10 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	*new_process(t_data *data, int nb)
 	if (data->number_of_philosophers == 1) // REMOVE THIS IF I'M GOOD
 	{
 		print_msg(philo.num, data, 0);
-		usleep(data->time_to_die * 1000);
+		ft_usleep(data->time_to_die * 1000);
 		die(&philo, data);
 		exit(EXIT_SUCCESS);
 	}

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 00:14:18 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 14:09:25 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/16 13:10:10 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	*death_monitoring(void *param)
 	{
 		if (get_time_now() > philo->last_eat + data->time_to_die)
 			die((t_philo *)philo, (t_data *)data);
-		usleep(10);
+		ft_usleep(10);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 00:17:24 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/16 13:09:06 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ void	is_finished(t_philo *philo, t_data *data);
 void	release_forks(t_philo *philo, t_data *data);
 
 // time
+void	ft_usleep(size_t usec);
 long	get_time(struct timeval *timestamp);
 long	get_time_now(void);
 long	get_sim_time(t_data *data);
