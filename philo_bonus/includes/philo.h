@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/16 13:09:06 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/16 15:59:28 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct s_data
 	sem_t	*quit_sem;
 }	t_data;
 
-typedef struct	s_routine
+typedef struct s_routine
 {
 	t_data	*data;
 	t_philo	*philo;

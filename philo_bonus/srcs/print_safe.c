@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:00:05 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 00:17:06 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/16 16:08:41 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ static void	itoa_custom(long num, char *str)
 	else
 	{
 		n = num;
-		if (num < 0) {
+		if (num < 0)
+		{
 			str[i++] = '-';
 			n = -num;
 		}
@@ -38,7 +39,6 @@ static void	itoa_custom(long num, char *str)
 			div /= 10;
 		}
 	}
-	str[i] = '\0';
 }
 
 void	print_safe(long timestamp, long id, char *message)
@@ -49,6 +49,8 @@ void	print_safe(long timestamp, long id, char *message)
 	int		i;
 	int		j;
 
+	memset(time_str, 0, 20);
+	memset(id_str, 0, 20);
 	itoa_custom(timestamp, time_str);
 	itoa_custom(id, id_str);
 	i = 0;
