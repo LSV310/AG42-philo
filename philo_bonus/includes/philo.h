@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 15:31:29 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 18:53:14 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ typedef struct s_philo
 {
 	long	num;
 	long	eating_count;
-	char	sem_name[5];
 	bool	fork1;
 	bool	fork2;
 	bool	finished_eating;

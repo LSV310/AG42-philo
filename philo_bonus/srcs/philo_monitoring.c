@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 00:14:18 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 15:34:27 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 19:07:54 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,11 @@ void	*death_monitoring(void *param)
 	monitor = routine_param->monitor;
 	while (1)
 	{
+		while (monitor->death_sem == NULL)
+			ft_usleep(100000);
 		sem_wait(monitor->death_sem);
 		if (get_time_now() > monitor->last_eat + data->time_to_die)
-		{
-			printf("%ld\n", monitor->last_eat);
 			die((t_philo *)philo, (t_data *)data, (t_monitor *)monitor);
-		}
 		sem_post(monitor->death_sem);
 		ft_usleep(10);
 	}
@@ -43,6 +42,7 @@ void	*quit_monitoring(void *param)
 	const t_monitor	*monitor = routine_param->monitor;
 
 	sem_wait(data->quit_sem);
+	sem_wait(monitor->death_sem);
 	close_all((t_data *)data, (t_monitor *)monitor);
 	exit(EXIT_SUCCESS);
 }

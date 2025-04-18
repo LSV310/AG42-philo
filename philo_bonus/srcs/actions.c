@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 15:30:28 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 19:12:02 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@ int	grab_forks(t_philo *philo, t_data *data)
 {
 	if (philo->fork1 == false)
 	{
-		if (sem_wait(data->fork_sem))
+		if (!data->fork_sem | sem_wait(data->fork_sem))
 			return (0);
 		philo->fork1 = true;
 		print_msg(philo->num, data, 0);
 	}
 	if (philo->fork2 == false)
 	{
-		if (sem_wait(data->fork_sem))
+		if (!data->fork_sem || sem_wait(data->fork_sem))
 			return (sem_post(data->fork_sem), 0);
 		philo->fork2 = true;
 		print_msg(philo->num, data, 0);
@@ -65,11 +65,6 @@ int	philo_think(t_philo *philo, t_data *data, bool first_think)
 void	die(t_philo *philo, t_data *data, t_monitor *monitor)
 {
 	print_msg(philo->num, data, 4);
-	sem_wait(monitor->death_sem);
-	sem_close(data->fork_sem);
-	sem_close(data->finish_sem);
-	sem_close(data->quit_sem);
-	sem_close(monitor->death_sem);
-	sem_unlink(monitor->sem_name);
+	close_all(data, monitor);
 	exit(EXIT_FAILURE);
 }

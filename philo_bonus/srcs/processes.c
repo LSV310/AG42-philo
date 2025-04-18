@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 15:38:27 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 18:53:58 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,7 @@ void	philo_start(t_data *data, t_philo *philo, t_routine *routine_param)
 		action++;
 		if (action > THINKING)
 			action = EATING;
-		if (action == EATING &&
-			philo_eat(philo, data, routine_param->monitor))
+		if (action == EATING && philo_eat(philo, data, routine_param->monitor))
 			return ;
 		else if (action == SLEEPING && philo_sleep(philo, data))
 			return ;
@@ -65,15 +64,16 @@ int	initialize_sems(t_data *data, t_philo *philo, t_monitor *monitor)
 	size = 1;
 	sem_wait(data->finish_sem);
 	sem_wait(data->quit_sem);
-	philo->sem_name[0] = 'p';
+	memset(monitor->sem_name, 0, 5);
+	monitor->sem_name[0] = 'p';
 	while (philo->num + 1 > ft_pow(10, size))
 		size++;
-	philo->sem_name[size + 1] = 0;
+	monitor->sem_name[size + 1] = 0;
 	i = 1;
 	while (size > 0)
-		philo->sem_name[i++] = philo->num / ft_pow(10, --size) % 10 + '0';
-	sem_unlink(philo->sem_name);
-	monitor->death_sem = sem_open(philo->sem_name, O_CREAT, 0644, 1);
+		monitor->sem_name[i++] = philo->num / ft_pow(10, --size) % 10 + '0';
+	sem_unlink(monitor->sem_name);
+	monitor->death_sem = sem_open(monitor->sem_name, O_CREAT, 0644, 1);
 	ft_usleep(10000);
 	if (monitor->death_sem == SEM_FAILED)
 		return (0);
@@ -101,7 +101,7 @@ void	*new_process(t_data *data, int nb)
 	routine_param.philo = &philo;
 	routine_param.monitor = &monitor;
 	philo_start(data, &philo, &routine_param);
-	close_all(data, &monitor);
-	exit(EXIT_FAILURE);
+	while (1)
+		ft_usleep(100000);
 	return (NULL);
 }
