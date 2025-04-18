@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 19:28:18 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 20:00:57 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	attribute_forks(t_data *data, t_philo *philo)
 
 static t_action	first_action(t_data *data, t_philo *philo)
 {
-	if (philo->num == 0 && data->number_of_philosophers % 2 == 1)
+	if (philo->num == 1 && data->number_of_philosophers % 2 == 1)
 	{
 		if (philo_think(philo, data, false))
 			return (DYING);

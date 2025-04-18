@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 15:01:22 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 19:43:41 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ void	print_msg(long num, t_data *data, int msg)
 
 	pthread_mutex_lock(&data->lock);
 	ms = get_sim_time(data);
-	num++;
 	if (msg != 4 && data->end == true)
 	{
 		pthread_mutex_unlock(&data->lock);
