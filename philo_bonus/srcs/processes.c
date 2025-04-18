@@ -6,19 +6,25 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/16 13:10:10 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 15:38:27 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-static t_action	first_action(t_data *data, t_philo *philo)
+static t_action	first_action(t_data *data, t_philo *philo, t_monitor *monitor)
 {
-	if (philo->num % 2 == 1)
+	if (philo->num == 0 && data->number_of_philosophers % 2 == 1)
 	{
-		if (!can_eat(philo, data))
-			philo_think(philo, data, false);
-		philo_eat(philo, data);
+		philo_think(philo, data, false);
+		philo_eat(philo, data, monitor);
+		return (EATING);
+	}
+	if (philo->num % 2 == 0)
+	{
+		if (grab_forks(philo, data) == 0)
+			return (DYING);
+		philo_eat(philo, data, monitor);
 		return (EATING);
 	}
 	else
@@ -28,14 +34,12 @@ static t_action	first_action(t_data *data, t_philo *philo)
 	}
 }
 
-void	philo_start(t_data *data, t_philo *philo)
+void	philo_start(t_data *data, t_philo *philo, t_routine *routine_param)
 {
 	t_action	action;
 
-	philo->fork1 = false;
-	philo->fork2 = false;
-	start_monitoring(data, philo);
-	action = first_action(data, philo);
+	start_monitoring(routine_param);
+	action = first_action(data, philo, routine_param->monitor);
 	if (action == DYING)
 		return ;
 	while (true)
@@ -43,7 +47,8 @@ void	philo_start(t_data *data, t_philo *philo)
 		action++;
 		if (action > THINKING)
 			action = EATING;
-		if (action == EATING && philo_eat(philo, data))
+		if (action == EATING &&
+			philo_eat(philo, data, routine_param->monitor))
 			return ;
 		else if (action == SLEEPING && philo_sleep(philo, data))
 			return ;
@@ -52,26 +57,51 @@ void	philo_start(t_data *data, t_philo *philo)
 	}
 }
 
+int	initialize_sems(t_data *data, t_philo *philo, t_monitor *monitor)
+{
+	long	size;
+	long	i;
+
+	size = 1;
+	sem_wait(data->finish_sem);
+	sem_wait(data->quit_sem);
+	philo->sem_name[0] = 'p';
+	while (philo->num + 1 > ft_pow(10, size))
+		size++;
+	philo->sem_name[size + 1] = 0;
+	i = 1;
+	while (size > 0)
+		philo->sem_name[i++] = philo->num / ft_pow(10, --size) % 10 + '0';
+	sem_unlink(philo->sem_name);
+	monitor->death_sem = sem_open(philo->sem_name, O_CREAT, 0644, 1);
+	ft_usleep(10000);
+	if (monitor->death_sem == SEM_FAILED)
+		return (0);
+	return (1);
+}
+
 void	*new_process(t_data *data, int nb)
 {
-	t_philo	philo;
+	t_philo		philo;
+	t_routine	routine_param;
+	t_monitor	monitor;
 
 	free(data->pids);
-	printf("%p\n", data->quit_sem);
 	philo.num = nb;
+	if (!initialize_sems(data, &philo, &monitor))
+		(close_all(data, &monitor), exit(EXIT_FAILURE));
 	philo.eating_count = 0;
 	philo.finished_eating = false;
-	philo.last_eat = data->start_ts;
+	monitor.last_eat = get_time_now();
+	philo.fork1 = false;
+	philo.fork2 = false;
 	if (data->times_must_eat == 0)
-		exit(EXIT_SUCCESS);
-	if (data->number_of_philosophers == 1) // REMOVE THIS IF I'M GOOD
-	{
-		print_msg(philo.num, data, 0);
-		ft_usleep(data->time_to_die * 1000);
-		die(&philo, data);
-		exit(EXIT_SUCCESS);
-	}
-	philo_start(data, &philo);
+		(close_all(data, &monitor), exit(EXIT_FAILURE));
+	routine_param.data = data;
+	routine_param.philo = &philo;
+	routine_param.monitor = &monitor;
+	philo_start(data, &philo, &routine_param);
+	close_all(data, &monitor);
 	exit(EXIT_FAILURE);
 	return (NULL);
 }

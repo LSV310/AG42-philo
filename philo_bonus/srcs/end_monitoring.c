@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:18:59 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 13:58:08 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 14:28:39 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ void	wait_all(t_data *data, int amount)
 	int			status;
 	pthread_t	thread;
 
+	ft_usleep(10000);
 	if (pthread_create(&thread, NULL, &finish_monitoring, data))
 		return ;
 	pthread_detach(thread);

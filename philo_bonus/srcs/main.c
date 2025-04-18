@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/16 16:00:54 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 15:37:21 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ pid_t	*create_all_processes(t_data *data)
 		return (NULL);
 	memset(data->pids, 0, data->number_of_philosophers * sizeof(pid_t));
 	i = 0;
-	data->start_ts = get_time_now();
+	data->start_ts = get_time_now() + 10;
 	while (i < data->number_of_philosophers)
 	{
 		data->pids[i] = fork();
@@ -76,16 +76,14 @@ int	create_sems(t_data *data)
 			data->number_of_philosophers);
 	if (data->fork_sem == SEM_FAILED)
 		return (EXIT_FAILURE);
-	data->finish_sem = sem_open("/finished", O_CREAT, 0644, 0);
+	data->finish_sem = sem_open("/finished", O_CREAT, 0644,
+			data->number_of_philosophers);
 	if (data->finish_sem == SEM_FAILED)
 		return (exit_all(data), EXIT_FAILURE);
-	sem_post(data->finish_sem);
-	sem_wait(data->finish_sem);
-	data->quit_sem = sem_open("/quit", O_CREAT, 0644, 0);
+	data->quit_sem = sem_open("/quit", O_CREAT, 0644,
+			data->number_of_philosophers);
 	if (data->quit_sem == SEM_FAILED)
 		return (exit_all(data), EXIT_FAILURE);
-	sem_post(data->quit_sem);
-	sem_wait(data->quit_sem);
 	return (0);
 }
 

@@ -6,11 +6,23 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/03/20 00:17:24 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 15:31:32 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+void	close_all(t_data *data, t_monitor *monitor)
+{
+	sem_close(data->fork_sem);
+	sem_close(data->finish_sem);
+	sem_close(data->quit_sem);
+	if (monitor->death_sem)
+	{
+		sem_close(monitor->death_sem);
+		sem_unlink(monitor->sem_name);
+	}
+}
 
 void	exit_all(t_data *data)
 {
@@ -66,5 +78,22 @@ long	ft_atol(const char *nptr)
 	}
 	if (nptr[i] != '\0')
 		return (-1);
+	return (result);
+}
+
+int	ft_pow(int nb, int power)
+{
+	int	i;
+	int	result;
+
+	i = 0;
+	result = 1;
+	if (power < 0)
+		return (0);
+	while (i < power)
+	{
+		result *= nb;
+		i++;
+	}
 	return (result);
 }

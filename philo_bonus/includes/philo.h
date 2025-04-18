@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 23:03:39 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/16 15:59:28 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 15:31:29 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef struct s_philo
 {
 	long	num;
 	long	eating_count;
-	long	last_eat;
+	char	sem_name[5];
 	bool	fork1;
 	bool	fork2;
 	bool	finished_eating;
@@ -52,10 +52,18 @@ typedef struct s_data
 	sem_t	*quit_sem;
 }	t_data;
 
+typedef struct s_monitor
+{
+	long	last_eat;
+	sem_t	*death_sem;
+	char	sem_name[5];
+}	t_monitor;
+
 typedef struct s_routine
 {
-	t_data	*data;
-	t_philo	*philo;
+	t_data		*data;
+	t_philo		*philo;
+	t_monitor	*monitor;
 }	t_routine;
 
 typedef enum ACTIONS
@@ -68,14 +76,14 @@ typedef enum ACTIONS
 
 // processes
 void	*new_process(t_data *data, int nb);
-void	start_monitoring(t_data *data, t_philo *philo);
+void	start_monitoring(t_routine *routine);
 
 // actions
-int		can_eat(t_philo *philo, t_data *data);
+int		grab_forks(t_philo *philo, t_data *data);
 int		philo_sleep(t_philo *philo, t_data *data);
-int		philo_eat(t_philo *philo, t_data *data);
+int		philo_eat(t_philo *philo, t_data *data, t_monitor *monitor);
 int		philo_think(t_philo *philo, t_data *data, bool first_think);
-void	die(t_philo *philo, t_data *data);
+void	die(t_philo *philo, t_data *data, t_monitor *monitor);
 
 // eating
 void	is_finished(t_philo *philo, t_data *data);
@@ -91,6 +99,7 @@ long	get_sim_time(t_data *data);
 void	print_safe(long timestamp, long id, char *message);
 
 // utils
+void	close_all(t_data *data, t_monitor *monitor);
 void	exit_all(t_data *data);
 void	kill_all(pid_t *pids, int amount);
 void	quit_all(t_data *data);
@@ -98,5 +107,6 @@ void	wait_all(t_data *data, int amount);
 long	get_time(struct timeval *timestamp);
 void	print_msg(long num, t_data *data, int msg);
 long	ft_atol(const char *nptr);
+int		ft_pow(int nb, int power);
 
 #endif

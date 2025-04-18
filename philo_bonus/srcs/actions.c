@@ -6,13 +6,13 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/16 13:10:10 by agruet           ###   ########.fr       */
+/*   Updated: 2025/04/18 15:30:28 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	can_eat(t_philo *philo, t_data *data)
+int	grab_forks(t_philo *philo, t_data *data)
 {
 	if (philo->fork1 == false)
 	{
@@ -31,16 +31,13 @@ int	can_eat(t_philo *philo, t_data *data)
 	return (1);
 }
 
-int	philo_eat(t_philo *philo, t_data *data)
+int	philo_eat(t_philo *philo, t_data *data, t_monitor *death_monitor)
 {
-	if (get_time_now() > philo->last_eat + data->time_to_die)
-		die(philo, data);
-	philo->last_eat = get_time_now();
+	sem_wait(death_monitor->death_sem);
+	death_monitor->last_eat = get_time_now();
+	sem_post(death_monitor->death_sem);
 	print_msg(philo->num, data, 1);
-	if (data->time_to_die < data->time_to_eat)
-		ft_usleep(data->time_to_die * 1000);
-	else
-		ft_usleep(data->time_to_eat * 1000);
+	ft_usleep(data->time_to_eat * 1000);
 	release_forks(philo, data);
 	is_finished(philo, data);
 	return (0);
@@ -48,17 +45,7 @@ int	philo_eat(t_philo *philo, t_data *data)
 
 int	philo_sleep(t_philo *philo, t_data *data)
 {
-	long	ts;
-
-	if (get_time_now() > philo->last_eat + data->time_to_die)
-		die(philo, data);
 	print_msg(philo->num, data, 2);
-	ts = get_time_now();
-	if (philo->last_eat + data->time_to_die < ts + data->time_to_sleep)
-	{
-		ft_usleep((philo->last_eat + data->time_to_die - ts) * 1000);
-		die(philo, data);
-	}
 	ft_usleep(data->time_to_sleep * 1000);
 	return (0);
 }
@@ -70,24 +57,19 @@ int	philo_think(t_philo *philo, t_data *data, bool first_think)
 		ft_usleep(data->time_to_eat * 1000);
 	else
 		ft_usleep(1000);
-	while (!can_eat(philo, data))
-	{
-		if (get_time_now() > philo->last_eat + data->time_to_die)
-			die(philo, data);
+	while (!grab_forks(philo, data))
 		ft_usleep(10);
-	}
 	return (0);
 }
 
-void	die(t_philo *philo, t_data *data)
+void	die(t_philo *philo, t_data *data, t_monitor *monitor)
 {
-	if (philo->fork1 == true)
-		sem_post(data->fork_sem);
-	if (philo->fork2 == true)
-		sem_post(data->fork_sem);
+	print_msg(philo->num, data, 4);
+	sem_wait(monitor->death_sem);
 	sem_close(data->fork_sem);
 	sem_close(data->finish_sem);
 	sem_close(data->quit_sem);
-	print_msg(philo->num, data, 4);
+	sem_close(monitor->death_sem);
+	sem_unlink(monitor->sem_name);
 	exit(EXIT_FAILURE);
 }
