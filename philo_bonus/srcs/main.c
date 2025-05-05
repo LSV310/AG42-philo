@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/05/05 12:31:24 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 15:16:11 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,7 @@ int	create_sems(t_data *data)
 
 int	main(int ac, char **av)
 {
-	t_data			data;
-	struct timeval	current_time;
+	t_data	data;
 
 	if (ac < 5)
 		return (printf("Not enough arguments\n"), 1);

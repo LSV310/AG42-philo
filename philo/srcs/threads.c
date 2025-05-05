@@ -6,13 +6,13 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/05/05 11:12:04 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 15:15:07 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	all_threads_created(t_data *data, t_philo *philo)
+int	all_threads_created(t_data *data)
 {
 	pthread_mutex_lock(&data->lock);
 	if (data->threads_success == false)
@@ -100,7 +100,7 @@ void	*new_thread(void *arg)
 	data = ((t_newthread *)arg)->data;
 	free(arg);
 	philo.eating_count = 0;
-	if (!all_threads_created(data, &philo))
+	if (!all_threads_created(data))
 		return (NULL);
 	philo.last_eat = data->start_ts;
 	philo.finished_eating = false;

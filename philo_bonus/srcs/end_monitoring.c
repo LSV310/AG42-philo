@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:18:59 by agruet            #+#    #+#             */
-/*   Updated: 2025/05/05 12:24:23 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 15:16:26 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,6 @@ void	wait_all(t_data *data, int amount)
 	pthread_detach(thread);
 	waitpid(-1, &status, 0);
 	if (WIFEXITED(status))
-		kill_all(data->pids, data->number_of_philosophers);
+		kill_all(data->pids, amount);
 	return ;
 }

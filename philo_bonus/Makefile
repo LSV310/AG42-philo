@@ -1,5 +1,5 @@
 CC			= cc
-CFLAGS		= -ggdb #-Wall -Werror -Wextra
+CFLAGS		= -ggdb -Wall -Werror -Wextra
 
 INCLUDES	= includes/
 SRC_DIR		= srcs/

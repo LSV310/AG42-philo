@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/05/05 10:58:19 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 15:15:40 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,11 @@ int	philo_eat(t_philo *philo, t_data *data)
 	print_msg(philo->num, data, 1);
 	if (finished_eating(philo, data) == true)
 	{
-		eat_usleep(philo, data);
+		eat_usleep(data);
 		release_forks(philo, data);
 		return (1);
 	}
-	eat_usleep(philo, data);
+	eat_usleep(data);
 	release_forks(philo, data);
 	return (0);
 }

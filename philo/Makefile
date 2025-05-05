@@ -1,5 +1,5 @@
 CC			= cc
-CFLAGS		= -g3 #-Wall -Werror -Wextra
+CFLAGS		= -g3 -Wall -Werror -Wextra
 
 INCLUDES	= includes/
 SRC_DIR		= srcs/
