@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 16:12:28 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 18:53:58 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 12:25:23 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,20 @@ static t_action	first_action(t_data *data, t_philo *philo, t_monitor *monitor)
 {
 	if (philo->num == 0 && data->number_of_philosophers % 2 == 1)
 	{
-		philo_think(philo, data, false);
+		philo_think(philo, data, monitor, false);
 		philo_eat(philo, data, monitor);
 		return (EATING);
 	}
 	if (philo->num % 2 == 0)
 	{
-		if (grab_forks(philo, data) == 0)
+		if (grab_forks(philo, data, monitor) == 0)
 			return (DYING);
 		philo_eat(philo, data, monitor);
 		return (EATING);
 	}
 	else
 	{
-		philo_think(philo, data, true);
+		philo_think(philo, data, monitor, true);
 		return (THINKING);
 	}
 }
@@ -51,7 +51,8 @@ void	philo_start(t_data *data, t_philo *philo, t_routine *routine_param)
 			return ;
 		else if (action == SLEEPING && philo_sleep(philo, data))
 			return ;
-		else if (action == THINKING && philo_think(philo, data, false))
+		else if (action == THINKING && philo_think(philo, data,
+				routine_param->monitor, false))
 			return ;
 	}
 }
@@ -63,7 +64,6 @@ int	initialize_sems(t_data *data, t_philo *philo, t_monitor *monitor)
 
 	size = 1;
 	sem_wait(data->finish_sem);
-	sem_wait(data->quit_sem);
 	memset(monitor->sem_name, 0, 5);
 	monitor->sem_name[0] = 'p';
 	while (philo->num + 1 > ft_pow(10, size))

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:08:29 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/16 13:13:49 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 11:12:12 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	ft_usleep(size_t usec)
 {
 	long	start;
 
-	start = get_time_now() + usec / 1000;
+	start = get_time_now() + (usec / 1000);
 	while (get_time_now() < start)
 		usleep(10);
 }

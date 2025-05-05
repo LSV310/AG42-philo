@@ -6,16 +6,15 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:08:29 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/17 15:33:53 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 11:12:10 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../includes/philo.h"
 
 void	ft_usleep(size_t usec)
 {
 	long	start;
-	long	time;
 
 	start = get_time_now() + usec / 1000;
 	while (get_time_now() < start)

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 19:58:43 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 10:58:19 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int	philo_think(t_philo *philo, t_data *data, bool first_think)
 		return (1);
 	while (!can_eat(philo, data))
 	{
-		ft_usleep(10);
+		usleep(10);
 		if (get_death(data) == true)
 			return (1);
 		if (get_time_now() > philo->last_eat + data->time_to_die)

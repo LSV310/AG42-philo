@@ -6,23 +6,27 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:04:23 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 19:12:02 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 14:38:16 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	grab_forks(t_philo *philo, t_data *data)
+int	grab_forks(t_philo *philo, t_data *data, t_monitor *monitor)
 {
 	if (philo->fork1 == false)
 	{
-		if (!data->fork_sem | sem_wait(data->fork_sem))
+		sem_wait(monitor->death_sem);
+		sem_post(monitor->death_sem);
+		if (!data->fork_sem || sem_wait(data->fork_sem))
 			return (0);
 		philo->fork1 = true;
 		print_msg(philo->num, data, 0);
 	}
 	if (philo->fork2 == false)
 	{
+		sem_wait(monitor->death_sem);
+		sem_post(monitor->death_sem);
 		if (!data->fork_sem || sem_wait(data->fork_sem))
 			return (sem_post(data->fork_sem), 0);
 		philo->fork2 = true;
@@ -31,11 +35,12 @@ int	grab_forks(t_philo *philo, t_data *data)
 	return (1);
 }
 
-int	philo_eat(t_philo *philo, t_data *data, t_monitor *death_monitor)
+int	philo_eat(t_philo *philo, t_data *data, t_monitor *monitor)
 {
-	sem_wait(death_monitor->death_sem);
-	death_monitor->last_eat = get_time_now();
-	sem_post(death_monitor->death_sem);
+	usleep(10);
+	sem_wait(monitor->death_sem);
+	monitor->last_eat = get_time_now();
+	sem_post(monitor->death_sem);
 	print_msg(philo->num, data, 1);
 	ft_usleep(data->time_to_eat * 1000);
 	release_forks(philo, data);
@@ -50,15 +55,15 @@ int	philo_sleep(t_philo *philo, t_data *data)
 	return (0);
 }
 
-int	philo_think(t_philo *philo, t_data *data, bool first_think)
+int	philo_think(t_philo *philo, t_data *data, t_monitor *monitor, bool first)
 {
 	print_msg(philo->num, data, 3);
-	if (first_think == true)
+	if (first == true)
 		ft_usleep(data->time_to_eat * 1000);
 	else
 		ft_usleep(1000);
-	while (!grab_forks(philo, data))
-		ft_usleep(10);
+	while (!grab_forks(philo, data, monitor))
+		usleep(10);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:59:51 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 19:15:11 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 14:18:20 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,9 @@
 
 void	close_all(t_data *data, t_monitor *monitor)
 {
-	sem_t	*sem;
-
 	sem_close(data->fork_sem);
 	sem_close(data->finish_sem);
-	sem_close(data->quit_sem);
-	if (monitor->death_sem)
-	{
-		sem = monitor->death_sem;
-		monitor->death_sem = NULL;
-		sem_close(sem);
-		sem_unlink(monitor->sem_name);
-	}
+	sem_close(monitor->death_sem);
 }
 
 void	exit_all(t_data *data)
@@ -40,10 +31,6 @@ void	exit_all(t_data *data)
 		return ;
 	sem_close(data->finish_sem);
 	sem_unlink("/finished");
-	if (!data->quit_sem)
-		return ;
-	sem_close(data->quit_sem);
-	sem_unlink("/quit");
 }
 
 void	print_msg(long num, t_data *data, int msg)

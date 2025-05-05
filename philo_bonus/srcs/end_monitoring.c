@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:18:59 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 19:22:43 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 12:24:23 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,6 @@ void	kill_all(pid_t *pids, int amount)
 	}
 }
 
-void	quit_all(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->number_of_philosophers)
-	{
-		sem_post(data->quit_sem);
-		i++;
-	}
-}
-
 void	*finish_monitoring(void *data)
 {
 	long	i;
@@ -49,18 +37,20 @@ void	*finish_monitoring(void *data)
 		sem_wait(((t_data *)data)->finish_sem);
 		i++;
 	}
-	quit_all(data);
+	kill_all(((t_data *)data)->pids, ((t_data *)data)->number_of_philosophers);
 	return (NULL);
 }
 
 void	wait_all(t_data *data, int amount)
 {
 	pthread_t	thread;
+	int			status;
 
 	if (pthread_create(&thread, NULL, &finish_monitoring, data))
 		return ;
 	pthread_detach(thread);
-	waitpid(-1, NULL, 0);
-	quit_all(data);
+	waitpid(-1, &status, 0);
+	if (WIFEXITED(status))
+		kill_all(data->pids, data->number_of_philosophers);
 	return ;
 }

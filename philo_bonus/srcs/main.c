@@ -6,7 +6,7 @@
 /*   By: agruet <agruet@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:00:43 by agruet            #+#    #+#             */
-/*   Updated: 2025/04/18 19:17:48 by agruet           ###   ########.fr       */
+/*   Updated: 2025/05/05 12:31:24 by agruet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	fill_data(int ac, char **av, t_data *data)
 {
 	data->number_of_philosophers = ft_atol(av[1]);
-	if (data->number_of_philosophers < 1 || data->number_of_philosophers > 9999)
+	if (data->number_of_philosophers < 1 || data->number_of_philosophers > 200)
 		return (printf("Invalid number of philosophers\n"), 0);
 	data->time_to_die = ft_atol(av[2]);
 	if (data->time_to_die < 0)
@@ -71,7 +71,6 @@ int	create_sems(t_data *data)
 {
 	sem_unlink("/forks");
 	sem_unlink("/finished");
-	sem_unlink("/quit");
 	data->fork_sem = sem_open("/forks", O_CREAT, 0644,
 			data->number_of_philosophers);
 	if (data->fork_sem == SEM_FAILED)
@@ -79,10 +78,6 @@ int	create_sems(t_data *data)
 	data->finish_sem = sem_open("/finished", O_CREAT, 0644,
 			data->number_of_philosophers);
 	if (data->finish_sem == SEM_FAILED)
-		return (exit_all(data), EXIT_FAILURE);
-	data->quit_sem = sem_open("/quit", O_CREAT, 0644,
-			data->number_of_philosophers);
-	if (data->quit_sem == SEM_FAILED)
 		return (exit_all(data), EXIT_FAILURE);
 	return (0);
 }
